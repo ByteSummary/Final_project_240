@@ -261,3 +261,89 @@ int main()
     simulation();
     return 0;
 }
+
+VehicleBase addNewVehicle(std::vector<VehicleBase*> roadBound, float prob_new_vehicle, Direction direction){
+    // if first section of road is open and randnum is inside probability
+    // needs to complete vehicle during creation
+    if (roadBound[0] == nullptr && randnum <= prob_new_vehicle){
+        VehicleType new_vehicle_type;
+        if (randnum <= lowest_proportion) {
+            new_vehicle_type = lowest_vehicle;
+        } else if (randnum <= lowest_proportion + middle_proportion) {
+            new_vehicle_type = middle_vehicle;
+        } else {
+            new_vehicle_type = highest_vehicle;
+        }
+        VehicleBase newVehicle(new_vehicle_type, direction);
+
+        roadBound[0] = &newVehicle;
+        
+        return newVehicle;
+    } else {
+        return ;
+    }
+}
+
+int getVehicleLength(VehicleBase* vehicle) {
+    if (*vehicle.getVehicleType() == VehicleType::car){
+        return 2;
+    } else if (*vehicle.getVehicleType() == VehicleType::suv){
+        return 3;
+    } else {
+        return 4;
+    }
+}
+
+void fixVehicleProportions(){
+    if (proportion_of_cars < proportion_of_SUVs) {
+        // cars < suvs
+        if (proportion_of_cars < proportion_of_trucks) {
+            // cars < trucks and suvs
+            lowest_proportion = proportion_of_cars;
+            lowest_vehicle = VehicleType::car;
+            if (proportion_of_trucks < proportion_of_SUVs) {
+                // cars < trucks < suvs
+                middle_proportion = proportion_of_trucks;
+                middle_vehicle = VehicleType::truck;
+                highest_vehicle = VehicleType::suv;
+            } else {
+                // cars < suvs < trucks
+                middle_proportion = proportion_of_SUVs;
+                middle_vehicle = VehicleType::suv;
+                highest_vehicle = VehicleType::truck;
+            }
+        } else {
+            // trucks < car < suvs
+            lowest_proportion = proportion_of_trucks;
+            lowest_vehicle = VehicleType::truck;
+            middle_proportion = proportion_of_cars;
+            middle_vehicle = VehicleType::car;
+            highest_vehicle = VehicleType::suv;
+        }
+    } else {
+        // suvs < cars
+        if (proportion_of_SUVs < proportion_of_trucks) {
+            // suvs < trucks and cars
+            lowest_proportion = proportion_of_SUVs;
+            lowest_vehicle = VehicleType::suv;
+            if (proportion_of_trucks < proportion_of_cars) {
+                // suvs < trucks < cars
+                middle_proportion = proportion_of_trucks;
+                middle_vehicle = VehicleType::truck;
+                highest_vehicle = VehicleType::car;
+            } else {
+                // suvs < cars < trucks
+                middle_proportion = proportion_of_cars;
+                middle_vehicle = VehicleType::car;
+                highest_vehicle = VehicleType::truck;
+            }
+        } else {
+            // trucks < suvs < cars
+            lowest_proportion = proportion_of_trucks;
+            lowest_vehicle = VehicleType::truck;
+            middle_proportion = proportion_of_SUVs;
+            middle_vehicle = VehicleType::suv;
+            highest_vehicle = VehicleType::car;
+        }
+    }
+}
