@@ -50,7 +50,7 @@ RoadIntersection* RoadIntersection::getWest() {
 }
 
 void RoadIntersection::setNorth(RoadIntersection* section) {
-    north = secion;
+    north = section;
 }
 void RoadIntersection::setEast(RoadIntersection* section) {
     east = section;
