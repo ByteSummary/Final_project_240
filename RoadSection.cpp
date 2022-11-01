@@ -11,11 +11,11 @@ RoadSection::RoadSection() {
 RoadSection::~RoadSection() {
 }
 //Returns a pointer to the next road section
-RoadSection *RoadSection::getNext() {
+RoadSection* RoadSection::getNext() {
     return next;
 }
 // Returns a pointer to the previous road section
-RoadSection *RoadSection::getPrevious() {
+RoadSection* RoadSection::getPrevious() {
     return previous;
 }
 
@@ -25,12 +25,12 @@ bool RoadSection::isEmpty() {
 }
 
 // Set pointer to next section
-void RoadSection::setNext(RoadSection *section) {
+void RoadSection::setNext(RoadSection* section) {
     next = section;
 }
 
 // Set pointer to previous section
-void RoadSection::setPrevious(RoadSection *section) {
+void RoadSection::setPrevious(RoadSection* section) {
     previous = section;
 }
 
