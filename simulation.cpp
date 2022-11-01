@@ -54,6 +54,8 @@ void simulation() { //std::string fileName
     std::vector<VehicleBase*> southbound(number_of_sections_before_intersection * 2 + 2, nullptr);
     std::vector<VehicleBase*> northbound(number_of_sections_before_intersection * 2 + 2, nullptr);
 
+    bool finished_created_vehicle = true;
+
     // std::map<std::string, int> compositionFile;
     // std::string category;
     // int value = 0;
@@ -223,18 +225,23 @@ void simulation() { //std::string fileName
 
         // if first section of road is open and randnum is inside probability
         // needs to complete vehicle during creation
-        if (westbound[0] == nullptr && randnum <= prob_new_vehicle_westbound){
-            VehicleType new_vehicle_type;
-            if (randnum <= lowest_proportion) {
-                new_vehicle_type = lowest_vehicle;
-            } else if (randnum <= lowest_proportion + middle_proportion) {
-                new_vehicle_type = middle_vehicle;
-            } else {
-                new_vehicle_type = highest_vehicle;
-            }
-            VehicleBase newVehicleWest(new_vehicle_type, Direction::west);
+        if (finished_created_vehicle) {
+            if (westbound[0] == nullptr && randnum <= prob_new_vehicle_westbound){
+                VehicleType new_vehicle_type;
+                if (randnum <= lowest_proportion) {
+                    new_vehicle_type = lowest_vehicle;
+                } else if (randnum <= lowest_proportion + middle_proportion) {
+                    new_vehicle_type = middle_vehicle;
+                } else {
+                    new_vehicle_type = highest_vehicle;
+                }
+                VehicleBase newVehicleWest(new_vehicle_type, Direction::west);
 
-            westbound[0] = &newVehicleWest;
+                westbound[0] = &newVehicleWest;
+                finished_created_vehicle = false;
+            }
+        } else {
+            
         }
 
         anim.setVehiclesNorthbound(northbound);
