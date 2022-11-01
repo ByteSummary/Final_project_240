@@ -2,7 +2,7 @@
 #include "VehicleBase.h"
 
 
-RoadSection *RoadSection::getNext() {
+RoadSection* RoadSection::getNext() {
     switch(getVehicleOriginalDirection()) {
         case Direction::north:
             return north;
@@ -18,7 +18,7 @@ RoadSection *RoadSection::getNext() {
             break;
     }
 }
-RoadSection *RoadSection::getPrevious() {
+RoadSection* RoadSection::getPrevious() {
     switch(getVehicleOriginalDirection()) {
         case Direction::north:
             return south;
@@ -35,29 +35,29 @@ RoadSection *RoadSection::getPrevious() {
     }
 }
 
-RoadIntersection *RoadIntersection::getRightTurn();
-RoadIntersection *RoadIntersection::getNorth() {
+RoadIntersection* RoadIntersection::getRightTurn();
+RoadIntersection* RoadIntersection::getNorth() {
     return north;
 }
-RoadIntersection *RoadIntersection::getEast() {
+RoadIntersection* RoadIntersection::getEast() {
     return east;
 }
-RoadIntersection *RoadIntersection::getSouth() {
+RoadIntersection* RoadIntersection::getSouth() {
     return south;
 }
-RoadIntersection *RoadIntersection::getWest() {
+RoadIntersection* RoadIntersection::getWest() {
     return west;
 }
 
-void RoadIntersection::setNorth(RoadIntersection *section) {
+void RoadIntersection::setNorth(RoadIntersection* section) {
     north = secion;
 }
-void RoadIntersection::setEast(RoadIntersection *section) {
+void RoadIntersection::setEast(RoadIntersection* section) {
     east = section;
 }
-void RoadIntersection::setSouth(RoadIntersection *section) {
+void RoadIntersection::setSouth(RoadIntersection* section) {
     south = section;
 }
-void RoadIntersection::setWest(RoadIntersection *section) {
+void RoadIntersection::setWest(RoadIntersection* section) {
     west = section;
 }
