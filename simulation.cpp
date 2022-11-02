@@ -6,29 +6,45 @@
 #include "Animator.h"
 #include "VehicleBase.h"
 
-void simulation() { //std::string fileName
-    // variables from input file
-    int maximum_simulated_time = 1000;
-    int number_of_sections_before_intersection = 10;
-    int green_north_south = 12;
-    int yellow_north_south = 3;
-    int green_east_west = 10;
-    int yellow_east_west = 3;
-    float prob_new_vehicle_northbound = 0.25;
-    float prob_new_vehicle_southbound = 0.1;
-    float prob_new_vehicle_eastbound = 0.15;
-    float prob_new_vehicle_westbound = 0.5;
-    float proportion_of_cars = 0.6;
-    float proportion_of_SUVs = 0.3;
-    float proportion_right_turn_cars = 0.4;
-    float proportion_left_turn_cars = 0.1;
-    float proportion_right_turn_SUVs = 0.3;
-    float proportion_left_turn_SUVs = 0.05;
-    float proportion_right_turn_trucks = 0.2;
-    float proportion_left_turn_trucks = 0.02;
-    char dummy;
+VehicleType addNewVehicleType(std::vector<VehicleBase*> roadBound, float prob_new_vehicle);
+void fixVehicleProprotions();
+int getVehicleLength(VehicleBase vehicle);
 
-    float randnum = 0.1; // need to fix this
+// variables from input file
+int maximum_simulated_time = 1000;
+int number_of_sections_before_intersection = 10;
+int green_north_south = 12;
+int yellow_north_south = 3;
+int green_east_west = 10;
+int yellow_east_west = 3;
+float prob_new_vehicle_northbound = 0.25;
+float prob_new_vehicle_southbound = 0.1;
+float prob_new_vehicle_eastbound = 0.15;
+float prob_new_vehicle_westbound = 0.5;
+float proportion_of_cars = 0.6;
+float proportion_of_SUVs = 0.3;
+float proportion_right_turn_cars = 0.4;
+float proportion_left_turn_cars = 0.1;
+float proportion_right_turn_SUVs = 0.3;
+float proportion_left_turn_SUVs = 0.05;
+float proportion_right_turn_trucks = 0.2;
+float proportion_left_turn_trucks = 0.02;
+float proportion_of_trucks = 1 - (proportion_of_cars + proportion_of_SUVs);
+
+float randnum = 0.1; // need to fix this
+
+// organizing proportions
+VehicleType lowest_vehicle;
+float lowest_proportion = 0;
+VehicleType middle_vehicle;
+float middle_proportion = 0;
+VehicleType highest_vehicle;
+VehicleBase newWestVehicle;
+int newVehicleWestCount = 0;
+int newVehicleWestLength;
+
+void simulation() { //std::string fileName
+    char dummy;
 
     // std::ifstream infile(fileName);
 
@@ -54,7 +70,7 @@ void simulation() { //std::string fileName
     std::vector<VehicleBase*> southbound(number_of_sections_before_intersection * 2 + 2, nullptr);
     std::vector<VehicleBase*> northbound(number_of_sections_before_intersection * 2 + 2, nullptr);
 
-    bool finished_created_vehicle = true;
+    bool finished_created_vehicle_west = true;
 
     // std::map<std::string, int> compositionFile;
     // std::string category;
@@ -115,66 +131,7 @@ void simulation() { //std::string fileName
     //     }
     // }
 
-    float proportion_of_trucks = 1 - (proportion_of_cars + proportion_of_SUVs);
-
-    // organizing proportions
-    VehicleType lowest_vehicle;
-    float lowest_proportion = 0;
-    VehicleType middle_vehicle;
-    float middle_proportion = 0;
-    VehicleType highest_vehicle;
-
-    if (proportion_of_cars < proportion_of_SUVs) {
-        // cars < suvs
-        if (proportion_of_cars < proportion_of_trucks) {
-            // cars < trucks and suvs
-            lowest_proportion = proportion_of_cars;
-            lowest_vehicle = VehicleType::car;
-            if (proportion_of_trucks < proportion_of_SUVs) {
-                // cars < trucks < suvs
-                middle_proportion = proportion_of_trucks;
-                middle_vehicle = VehicleType::truck;
-                highest_vehicle = VehicleType::suv;
-            } else {
-                // cars < suvs < trucks
-                middle_proportion = proportion_of_SUVs;
-                middle_vehicle = VehicleType::suv;
-                highest_vehicle = VehicleType::truck;
-            }
-        } else {
-            // trucks < car < suvs
-            lowest_proportion = proportion_of_trucks;
-            lowest_vehicle = VehicleType::truck;
-            middle_proportion = proportion_of_cars;
-            middle_vehicle = VehicleType::car;
-            highest_vehicle = VehicleType::suv;
-        }
-    } else {
-        // suvs < cars
-        if (proportion_of_SUVs < proportion_of_trucks) {
-            // suvs < trucks and cars
-            lowest_proportion = proportion_of_SUVs;
-            lowest_vehicle = VehicleType::suv;
-            if (proportion_of_trucks < proportion_of_cars) {
-                // suvs < trucks < cars
-                middle_proportion = proportion_of_trucks;
-                middle_vehicle = VehicleType::truck;
-                highest_vehicle = VehicleType::car;
-            } else {
-                // suvs < cars < trucks
-                middle_proportion = proportion_of_cars;
-                middle_vehicle = VehicleType::car;
-                highest_vehicle = VehicleType::truck;
-            }
-        } else {
-            // trucks < suvs < cars
-            lowest_proportion = proportion_of_trucks;
-            lowest_vehicle = VehicleType::truck;
-            middle_proportion = proportion_of_SUVs;
-            middle_vehicle = VehicleType::suv;
-            highest_vehicle = VehicleType::car;
-        }
-    }
+    fixVehicleProportions();
 
     for (int time = 0; time < maximum_simulated_time; time++){
 
@@ -223,25 +180,24 @@ void simulation() { //std::string fileName
             }
         }
 
-        // if first section of road is open and randnum is inside probability
-        // needs to complete vehicle during creation
-        if (finished_created_vehicle) {
-            if (westbound[0] == nullptr && randnum <= prob_new_vehicle_westbound){
-                VehicleType new_vehicle_type;
-                if (randnum <= lowest_proportion) {
-                    new_vehicle_type = lowest_vehicle;
-                } else if (randnum <= lowest_proportion + middle_proportion) {
-                    new_vehicle_type = middle_vehicle;
-                } else {
-                    new_vehicle_type = highest_vehicle;
-                }
-                VehicleBase newVehicleWest(new_vehicle_type, Direction::west);
-
-                westbound[0] = &newVehicleWest;
-                finished_created_vehicle = false;
-            }
+        // call function to add vehicles in each road
+        if (finished_created_vehicle_west) {
+            VehicleType newWestVehicleType = addNewVehicle(westbound, prob_new_vehicle_westbound);
+            newWestVehicle = (newWestVehicleType, Direction::west); //need copy or move assginment
+            westbound[0] = &newWestVehicle;
+            // if (newWestVehicle != nullptr) {
+            //     finished_created_vehicle_west = false;
+            //     newVehicleWestLength = getVehicleLength(newWestVehicle);
+            // }
         } else {
-            
+            if (newVehicleWestCount == newVehicleWestLength) {
+                finished_created_vehicle_west = true;
+                newVehicleWestCount = 0;
+            } else {
+                westbound[0] = &newWestVehicle;
+                newVehicleWestCount++;
+            }
+
         }
 
         anim.setVehiclesNorthbound(northbound);
@@ -262,7 +218,7 @@ int main()
     return 0;
 }
 
-VehicleBase addNewVehicle(std::vector<VehicleBase*> roadBound, float prob_new_vehicle, Direction direction){
+VehicleType addNewVehicleType(std::vector<VehicleBase*> roadBound, float prob_new_vehicle){
     // if first section of road is open and randnum is inside probability
     // needs to complete vehicle during creation
     if (roadBound[0] == nullptr && randnum <= prob_new_vehicle){
@@ -274,11 +230,7 @@ VehicleBase addNewVehicle(std::vector<VehicleBase*> roadBound, float prob_new_ve
         } else {
             new_vehicle_type = highest_vehicle;
         }
-        VehicleBase newVehicle(new_vehicle_type, direction);
-
-        roadBound[0] = &newVehicle;
-        
-        return newVehicle;
+        return newVehicleType;
     } else {
         return ;
     }
