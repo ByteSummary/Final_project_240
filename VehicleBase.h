@@ -19,6 +19,9 @@ class VehicleBase
    public:
       VehicleBase(VehicleType type, Direction originalDirection);
       VehicleBase(const VehicleBase& other);
+      VehicleBase& VehicleBase::operator=(const VehicleBase& other);
+      VehicleBase::VehicleBase(VehicleBase&& other)noexcept;
+      VehicleBase& VehicleBase::operator=(VehicleBase&&)noexcept;
       ~VehicleBase();
 
       inline int getVehicleID() const { return this->vehicleID; }
