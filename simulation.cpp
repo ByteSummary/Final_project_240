@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        westbound.moveVehicles();
+        westbound.moveVehicles(randnum);
         westbound.spawnNewVehicle(randnum);
 
         anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());

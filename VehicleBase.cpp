@@ -32,6 +32,7 @@ VehicleBase::VehicleBase(VehicleType type, Direction direction)
     } else {
       vehicleLength = 4;
     }
+  vehicleLengthCount = 0;
 }
 
 // Copy constructor
@@ -39,7 +40,8 @@ VehicleBase::VehicleBase(const VehicleBase& other):
       vehicleID(other.vehicleID),
       vehicleType(other.vehicleType),
       vehicleDirection(other.vehicleDirection),
-      vehicleLength(other.vehicleLength)
+      vehicleLength(other.vehicleLength),
+      vehicleLengthCount(other.vehicleLengthCount)
 {}
 
 // copy assignment operator
@@ -51,6 +53,7 @@ VehicleBase& VehicleBase::operator=(const VehicleBase& other) {
   vehicleType = other.vehicleType;
   vehicleDirection = other.vehicleDirection;
   vehicleLength = other.vehicleLength;
+  vehicleLengthCount = other.vehicleLengthCount;
 
   return *this;
 }
@@ -81,5 +84,13 @@ VehicleBase& VehicleBase::operator=(const VehicleBase& other) {
 
 // destructor
 VehicleBase::~VehicleBase() {}
+
+void VehicleBase::incrementVehicleLengthCount(){
+  vehicleLengthCount = vehicleLengthCount + 1;
+}
+
+void VehicleBase::decrementVehicleLengthCount(){
+  vehicleLengthCount = vehicleLengthCount - 1;
+}
 
 #endif

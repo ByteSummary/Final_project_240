@@ -16,6 +16,7 @@ class VehicleBase
       VehicleType vehicleType;
       Direction   vehicleDirection;
       int         vehicleLength;
+      int         vehicleLengthCount;
 
    public:
       VehicleBase(VehicleType type, Direction originalDirection);
@@ -25,11 +26,15 @@ class VehicleBase
       // VehicleBase& VehicleBase::operator=(VehicleBase&&)noexcept;
       ~VehicleBase();
 
+      void incrementVehicleLengthCount();
+      void decrementVehicleLengthCount();
+
       inline int getVehicleID() const { return this->vehicleID; }
 
       inline VehicleType getVehicleType() const { return this->vehicleType; }
       inline Direction   getVehicleOriginalDirection() const { return this->vehicleDirection; }
       inline int getVehicleLength() const { return this->vehicleLength; }
+      inline int getVehicleLengthCount() const { return this->vehicleLengthCount; }
 };
 
 #endif

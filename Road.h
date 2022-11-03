@@ -3,15 +3,15 @@
 
 #include "VehicleBase.h"
 #include <vector>
+#include <map>
+#include <string>
 
 class Road {
 
     public:
         static int sections_before_intersection;
 
-        static float proportion_of_cars;
-        static float proportion_of_SUVs;
-        static float proportion_of_trucks;
+        // static std::map<std::string, std::map<float, VehicleType>> vehicleProportions;
 
         static VehicleType lowest_vehicle;
         static float lowest_proportion;
@@ -24,13 +24,7 @@ class Road {
         Direction roadDirection;
         float prob_new_vehicle;
         VehicleBase* newVehicle;
-        bool finishedNewVehicle;
-        int newVehicleCount;
         VehicleBase* endVehicle;
-        bool finishedEndVehicle;
-        int endVehicleCount;
-
-        static void organizingVehicleProportions();
 
     public: 
         // Road();
@@ -47,7 +41,7 @@ class Road {
         inline std::vector<VehicleBase*> getVehicleBaseVector() {return this->roadBound;}
 
         inline static void initRoadSections(int number_of_sections_before_interseciton) {sections_before_intersection = number_of_sections_before_interseciton;}
-        static void settingVehicleProportions(float car_prop, float suv_prop, float truck_prop);
+        static void settingVehicleProportions(float proportion_of_cars, float proportion_of_SUVs, float proportion_of_trucks);
 
 };
 

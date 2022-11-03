@@ -8,10 +8,6 @@
 
 int Road::sections_before_intersection = 0;
 
-float Road::proportion_of_cars = 0.0;
-float Road::proportion_of_SUVs = 0.0;
-float Road::proportion_of_trucks = 0.0;
-
 VehicleType Road::lowest_vehicle = VehicleType::car;
 float Road::lowest_proportion = 0.0;
 VehicleType Road::middle_vehicle = VehicleType::car;
@@ -30,11 +26,7 @@ Road::Road(Direction direction, float spawn_new_vehicle_rate){
     roadDirection = direction;
     prob_new_vehicle = spawn_new_vehicle_rate;
     newVehicle = nullptr;
-    finishedNewVehicle = true;
-    newVehicleCount = 0;
     endVehicle = nullptr;
-    finishedEndVehicle = true;
-    endVehicleCount = 0;
 }
 
 // Road::Road(const Road& other){}
@@ -75,22 +67,20 @@ void Road::moveVehicles(float randnum){
             // at end of the road
             if (vehicle_pointer_counter == (sections_before_intersection * 2 + 2) - 1)
             {
-                if(finishedEndVehicle)
+                if(endVehicle == nullptr)
                 {
                     endVehicle = roadBound[vehicle_pointer_counter];
                     roadBound[vehicle_pointer_counter] = nullptr;
-                    finishedEndVehicle = false;
-                    endVehicleCount++;
+                    endVehicle->decrementVehicleLengthCount();
                 } 
                 else
                 {
                     roadBound[vehicle_pointer_counter] = nullptr;
-                    endVehicleCount++;
-                    if (endVehicle->getVehicleLength() == endVehicleCount)
+                    endVehicle->decrementVehicleLengthCount();
+                    if (endVehicle->getVehicleLengthCount() == 0)
                     {
                         delete endVehicle;
-                        finishedEndVehicle = true;
-                        endVehicleCount++;
+                        endVehicle = nullptr;
                     }
                 }
             }
@@ -106,7 +96,7 @@ void Road::moveVehicles(float randnum){
 
 void Road::spawnNewVehicle(float randnum){
     // call function to add vehicles in each road
-    if (finishedNewVehicle)
+    if (newVehicle == nullptr)
     {
         // if first section of road is open and randnum is inside probability
         // needs to complete vehicle during creation
@@ -130,32 +120,21 @@ void Road::spawnNewVehicle(float randnum){
             }
             // newVehicle = new VehicleBase(new_vehicle_type, roadDirection);
             roadBound[0] = newVehicle;
-            finishedNewVehicle = false;
-            newVehicleCount = 1;
+            newVehicle->incrementVehicleLengthCount();
         }
     }
     else
     {
         roadBound[0] = newVehicle;
-        newVehicleCount++;
-        if (newVehicle->getVehicleLength() == newVehicleCount)
+        newVehicle->incrementVehicleLengthCount();
+        if (newVehicle->getVehicleLengthCount() == newVehicle->getVehicleLength())
         {
-            finishedNewVehicle = true;
-            newVehicleCount = 0;
+            newVehicle = nullptr;
         }
     }
 }
 
-void Road::settingVehicleProportions(float car_prop, float suv_prop, float truck_prop) {
-    proportion_of_cars = car_prop;
-    proportion_of_SUVs = suv_prop;
-    proportion_of_trucks = truck_prop;
-
-    organizingVehicleProportions();
-
-}
-
-void Road::organizingVehicleProportions() {
+void Road::settingVehicleProportions(float proportion_of_cars, float proportion_of_SUVs, float proportion_of_trucks) {
     if (proportion_of_cars < proportion_of_SUVs)
     {
         // cars < suvs
