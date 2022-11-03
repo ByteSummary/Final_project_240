@@ -4,6 +4,9 @@
 #include "VehicleBase.h"
 
 int VehicleBase::vehicleCount = 0;
+VehicleType NULLTYPE;
+Direction NULLDIRECTION;
+
 
 // VehicleBase::VehicleBase(VehicleType type, Direction direction) {
 //       vehicleID = 0;
@@ -58,29 +61,29 @@ VehicleBase& VehicleBase::operator=(const VehicleBase& other) {
   return *this;
 }
 
-// // move constructor
-// VehicleBase::VehicleBase(VehicleBase&& other)noexcept:
-//   vehicleID(other.vehicleID),
-//   vehicleType(other.vehicleType),
-//   vehicleDirection(other.vehicleDirection) {
-//     other.vehicleID = 0;
-//     other.vehicleType = ;
-//     other.vehicleDirection = ;
-//   }
+// move constructor
+VehicleBase::VehicleBase(VehicleBase&& other)noexcept:
+  vehicleID(other.vehicleID),
+  vehicleType(other.vehicleType),
+  vehicleDirection(other.vehicleDirection) {
+    other.vehicleID = 0;
+    other.vehicleType = NULLTYPE;
+    other.vehicleDirection = NULLDIRECTION;
+  }
 
-// // move assignment operator constructor
-// VehicleBase& VehicleBase::operator=(VehicleBase&& other)noexcept {
-//   if (this == &other) {
-//     return *this;
-//   }
-//   vehicleID = other.vehicleID;
-//   vehicleType = other.vehicleType;
-//   vehicleDirection = other.vehicleDirection;
-//   other.vehicleID = 0;
-//   other.vehicleType = ;
-//   other.vehicleDirection = ;
-//   return *this;
-// }
+// move assignment operator constructor
+VehicleBase& VehicleBase::operator=(VehicleBase&& other)noexcept {
+  if (this == &other) {
+    return *this;
+  }
+  vehicleID = other.vehicleID;
+  vehicleType = other.vehicleType;
+  vehicleDirection = other.vehicleDirection;
+  other.vehicleID = 0;
+  other.vehicleType = NULLTYPE;
+  other.vehicleDirection = NULLDIRECTION;
+  return *this;
+}
 
 // destructor
 VehicleBase::~VehicleBase() {}

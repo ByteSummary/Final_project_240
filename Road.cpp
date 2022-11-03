@@ -50,6 +50,15 @@ void Road::moveVehicles(float randnum){
             // at intersection
             if (vehicle_pointer_counter + 1 == sections_before_intersection - 1)
             {
+                /*
+                1. Get the light color from the intersection
+                2. If color is red, and we can turn right, check if we can turn right then turn right
+                3. If color is red, and we cannot turn right, stop.
+                4. If color is yellow, check time remaining on yellow and make sure it is greater than the length of vehicle at intersection
+                5. If time < length, dont continue, else continue
+                6. If color is green, vehicle can continue forward
+                7. If color is green and vehicle is going to turn right, turn right.
+                */
                 // // move forward at intersection or turn right
                 // VehicleType vehicleIntersection = roadBound[vehicle_pointer_counter]->getVehicleType();
 
