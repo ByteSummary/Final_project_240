@@ -47,7 +47,7 @@ Road::~Road(){
     }
 }
 
-void Road::moveVehicles(){
+void Road::moveVehicles(float randnum){
     // move vehicles forward
     for (int vehicle_pointer_counter = (sections_before_intersection * 2 + 2) - 1; vehicle_pointer_counter >= 0; vehicle_pointer_counter--)
     {
@@ -58,7 +58,19 @@ void Road::moveVehicles(){
             // at intersection
             if (vehicle_pointer_counter + 1 == sections_before_intersection - 1)
             {
-                // move forward at intersection or turn right
+                // // move forward at intersection or turn right
+                // VehicleType vehicleIntersection = roadBound[vehicle_pointer_counter]->getVehicleType();
+
+                // // turn right
+                // if (randnum <= prob_right_turn_for_vehicle)
+                // {
+
+                // }
+                // // go straight
+                // else
+                // {
+
+                // }
             }
             // at end of the road
             if (vehicle_pointer_counter == (sections_before_intersection * 2 + 2) - 1)

@@ -41,7 +41,7 @@ class Road {
         // Road& Road::operator=(Road&&)noexcept;
         ~Road();
 
-        void moveVehicles();
+        void moveVehicles(float randnum);
         void spawnNewVehicle(float randnum);
 
         inline std::vector<VehicleBase*> getVehicleBaseVector() {return this->roadBound;}
