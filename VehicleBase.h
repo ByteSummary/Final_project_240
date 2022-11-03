@@ -15,19 +15,21 @@ class VehicleBase
       int         vehicleID;
       VehicleType vehicleType;
       Direction   vehicleDirection;
+      int         vehicleLength;
 
    public:
       VehicleBase(VehicleType type, Direction originalDirection);
       VehicleBase(const VehicleBase& other);
-      VehicleBase& VehicleBase::operator=(const VehicleBase& other);
-      VehicleBase::VehicleBase(VehicleBase&& other)noexcept;
-      VehicleBase& VehicleBase::operator=(VehicleBase&&)noexcept;
+      VehicleBase& operator=(const VehicleBase& other);
+      // VehicleBase::VehicleBase(VehicleBase&& other)noexcept;
+      // VehicleBase& VehicleBase::operator=(VehicleBase&&)noexcept;
       ~VehicleBase();
 
       inline int getVehicleID() const { return this->vehicleID; }
 
       inline VehicleType getVehicleType() const { return this->vehicleType; }
       inline Direction   getVehicleOriginalDirection() const { return this->vehicleDirection; }
+      inline int getVehicleLength() const { return this->vehicleLength; }
 };
 
 #endif
