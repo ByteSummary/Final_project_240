@@ -19,6 +19,7 @@ class VehicleBase
       int         vehicleLengthCount;
       bool        willTurnRight;
       bool        isTurningRight;
+      bool        hasGreen;
 
    public:
       VehicleBase(VehicleType type, Direction originalDirection);
