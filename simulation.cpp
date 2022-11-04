@@ -6,12 +6,15 @@
 #include <tuple>
 #include "Animator.h"
 #include "VehicleBase.h"
+#include "TrafficLight.h"
 #include "Road.h"
 
 int main(int argc, char *argv[])
 {
+
     std::map<std::string, float> compositionFile;
     std::map<std::string, float>::iterator itr;
+    LightColor lightcolor;
     std::string category;
     float value = 0;
 
@@ -171,7 +174,7 @@ int main(int argc, char *argv[])
         {
             // east west light is green/yellow
             if (count_east_west == green_east_west)
-            {
+            {   
                 anim.setLightEastWest(LightColor::yellow);
                 count_east_west++;
             }
@@ -208,8 +211,9 @@ int main(int argc, char *argv[])
             }
         }
 
-        westbound.moveVehicles(randnum);
+        
         westbound.spawnNewVehicle(randnum);
+        westbound.moveVehicles(randnum);
 
         anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
         anim.setVehiclesWestbound(westbound.getVehicleBaseVector());

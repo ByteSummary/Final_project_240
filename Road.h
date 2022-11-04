@@ -2,6 +2,7 @@
 #define __ROAD_H__
 
 #include "VehicleBase.h"
+#include "TrafficLight.h"
 #include <vector>
 #include <map>
 #include <string>
@@ -29,10 +30,10 @@ class Road {
     public: 
         // Road();
         Road(Direction direction, float spawn_new_vehicle_rate);
-        // Road(const Road& other);
-        // Road& Road::operator=(const Road& other);
-        // Road::Road(Road&& other)noexcept;
-        // Road& Road::operator=(Road&&)noexcept;
+        Road(const Road& other);
+        Road& Road::operator=(const Road& other);
+        Road::Road(Road&& other)noexcept;
+        Road& Road::operator=(Road&&)noexcept;
         ~Road();
 
         void moveVehicles(float randnum);

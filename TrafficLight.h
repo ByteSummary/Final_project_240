@@ -10,12 +10,22 @@ class TrafficLight {
         int timeGreen;
         int timeYellow;
         int timeRed;
+        int timeChange;
 
     public:
-        TrafficLight(const TrafficLight &other);
+        TrafficLight(LightColor color, int green, int yellow, int red);
+        TrafficLight(const TrafficLight& other);
         TrafficLight& operator=(const TrafficLight& other);
-        TrafficLight::TrafficLight(TrafficLight&& other)noexcept;
-        TrafficLight& TrafficLight::operator=(TrafficLight&&)noexcept;
+        TrafficLight(TrafficLight&& other)noexcept;
+        TrafficLight& operator=(TrafficLight&&)noexcept;
+
+        int getTimeGreen();
+        int getTimeYellow();
+        int getTimeRed();
+        int getTimeBeforeChange();
+        LightColor getLightColor();
+        LightColor setLightColor(LightColor newColor);
+
 };
 
 #endif

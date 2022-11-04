@@ -19,14 +19,13 @@ class VehicleBase
       int         vehicleLengthCount;
       bool        willTurnRight;
       bool        isTurningRight;
-      bool        hasGreen;
 
    public:
-      VehicleBase(VehicleType type, Direction originalDirection);
+      VehicleBase(VehicleType type, Direction originalDirection );
       VehicleBase(const VehicleBase& other);
       VehicleBase& operator=(const VehicleBase& other);
-      VehicleBase::VehicleBase(VehicleBase&& other)noexcept;
-      VehicleBase& VehicleBase::operator=(VehicleBase&&)noexcept;
+      VehicleBase(VehicleBase&& other)noexcept;
+      VehicleBase& operator=(VehicleBase&&)noexcept;
       ~VehicleBase();
 
       void incrementVehicleLengthCount();

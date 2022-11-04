@@ -1,12 +1,14 @@
 #ifndef __ROAD_CPP__
 #define __ROAD_CPP__
 
+#include "TrafficLight.h"
 #include "Road.h"
 #include "VehicleBase.h"
 #include <vector>
 #include <iostream>
 
 int Road::sections_before_intersection = 0;
+LightColor getLightColor();
 
 VehicleType Road::lowest_vehicle = VehicleType::car;
 float Road::lowest_proportion = 0.0;
@@ -29,10 +31,11 @@ Road::Road(Direction direction, float spawn_new_vehicle_rate){
     endVehicle = nullptr;
 }
 
-// Road::Road(const Road& other){}
-// Road& Road::operator=(const Road& other){}
-// Road::Road(Road&& other)noexcept{}
-// Road& Road::operator=(Road&&)noexcept{}
+
+Road::Road(const Road& other){}
+Road& Road::operator=(const Road& other){}
+Road::Road(Road&& other)noexcept{}
+Road& Road::operator=(Road&&)noexcept{}
 Road::~Road(){
     if (newVehicle != nullptr) {
         delete newVehicle;
@@ -50,6 +53,7 @@ void Road::moveVehicles(float randnum){
             // at intersection
             if (vehicle_pointer_counter + 1 == sections_before_intersection - 1)
             {
+            
                 /*
                 1. Get the light color from the intersection
                 2. If color is red, and we can turn right, check if we can turn right then turn right
