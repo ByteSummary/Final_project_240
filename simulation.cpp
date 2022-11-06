@@ -137,6 +137,8 @@ int main(int argc, char *argv[])
     float proportion_of_SUVs = 0.8;
     // float proportion_of_trucks = 1 - (proportion_of_cars + proportion_of_SUVs);
     float proportion_of_trucks = 1.1;
+    int red_east_west = green_north_south + yellow_north_south;
+    int red_north_south = green_east_west + yellow_east_west;
 
     float proportion_right_turn_cars = 0.9;
     float proportion_right_turn_SUVs = 0.9;

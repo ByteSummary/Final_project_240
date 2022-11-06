@@ -52,8 +52,8 @@ TrafficLight& TrafficLight::operator=(const TrafficLight& other) {
     timeRed = other.timeRed;
     timeChange = other.timeChange;
 
-    return *this;
-}
+//     return *this;
+// }
 
 TrafficLight::TrafficLight(TrafficLight&& other)noexcept:
     lightcolor(other.lightcolor),

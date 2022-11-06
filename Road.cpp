@@ -54,7 +54,6 @@ void Road::moveVehicles(float randnum){
             // at intersection
             if (vehicle_pointer_counter == sections_before_intersection - 1)
             {
-            
                 /*
                 1. Get the light color from the intersection
                 2. If color is red, and we can turn right, check if we can turn right then turn right
@@ -258,4 +257,8 @@ void Road::settingVehicleProportions(float proportion_of_cars, float proportion_
     }
 }
 
+TrafficLight* Road::getTrafficLight() {
+    return trafficlight;
+}
+    
 #endif
