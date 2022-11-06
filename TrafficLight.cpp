@@ -32,51 +32,51 @@ LightColor TrafficLight::setLightColor(LightColor c) {
     lightcolor = c;
 }
 
-TrafficLight::TrafficLight(const TrafficLight& other):
-    timeGreen(other.timeGreen),
-    timeYellow(other.timeYellow),
-    timeRed(other.timeRed),
-    timeChange(other.timeGreen)
-    {}
+// TrafficLight::TrafficLight(const TrafficLight& other):
+//     timeGreen(other.timeGreen),
+//     timeYellow(other.timeYellow),
+//     timeRed(other.timeRed),
+//     timeChange(other.timeGreen)
+//     {}
 
 
-TrafficLight& TrafficLight::operator=(const TrafficLight& other) {
-    if (this == &other) {
-        return *this;
-    }
+// TrafficLight& TrafficLight::operator=(const TrafficLight& other) {
+//     if (this == &other) {
+//         return *this;
+//     }
 
-    timeGreen = other.timeGreen;
-    timeYellow = other.timeYellow;
-    timeRed = other.timeRed;
-    timeChange = other.timeChange;
+//     timeGreen = other.timeGreen;
+//     timeYellow = other.timeYellow;
+//     timeRed = other.timeRed;
+//     timeChange = other.timeChange;
 
-    return *this;
-}
+//     return *this;
+// }
 
-TrafficLight::TrafficLight(TrafficLight&& other)noexcept:
-    timeGreen(other.timeGreen),
-    timeYellow(other.timeYellow),
-    timeRed(other.timeRed),
-    timeChange(other.timeGreen) {
-        other.timeGreen = 0;
-        other.timeYellow = 0;
-        other.timeRed = 0;
-        other.timeGreen = 0;
-    }
+// TrafficLight::TrafficLight(TrafficLight&& other)noexcept:
+//     timeGreen(other.timeGreen),
+//     timeYellow(other.timeYellow),
+//     timeRed(other.timeRed),
+//     timeChange(other.timeGreen) {
+//         other.timeGreen = 0;
+//         other.timeYellow = 0;
+//         other.timeRed = 0;
+//         other.timeGreen = 0;
+//     }
 
-TrafficLight& TrafficLight::operator=(TrafficLight&& other)noexcept {
-    if (this == &other) {
-        return *this;
-    }
-    timeGreen = other.timeGreen;
-    timeYellow = other.timeYellow;
-    timeRed = other.timeRed;
-    timeChange = other.timeGreen;
-    other.timeGreen = 0;
-    other.timeYellow = 0;
-    other.timeRed = 0;
-    other.timeGreen = 0;
-}
+// TrafficLight& TrafficLight::operator=(TrafficLight&& other)noexcept {
+//     if (this == &other) {
+//         return *this;
+//     }
+//     timeGreen = other.timeGreen;
+//     timeYellow = other.timeYellow;
+//     timeRed = other.timeRed;
+//     timeChange = other.timeGreen;
+//     other.timeGreen = 0;
+//     other.timeYellow = 0;
+//     other.timeRed = 0;
+//     other.timeGreen = 0;
+// }
 
 
 

@@ -23,7 +23,7 @@ Direction NULLDIRECTION;
 // }
 
 // common use constructor
-VehicleBase::VehicleBase(VehicleType type, Direction direction, bool turnRight)
+VehicleBase::VehicleBase(VehicleType type, Direction direction)
     : vehicleID(VehicleBase::vehicleCount++), 
       vehicleType(type),
       vehicleDirection(direction)

@@ -2,12 +2,12 @@ EXECS = simulation #testAnimator
 OBJS = simulation.o Animator.o VehicleBase.o Road.o #testAnimator.o
 
 #### use next two lines for Mac
-#CC = clang++
-#CCFLAGS = -std=gnu++2a -stdlib=libc++
+CC = clang++
+CCFLAGS = -std=gnu++2a -stdlib=libc++
 
 #### use next two lines for mathcs* machines:
-CC = g++
-CCFLAGS = -std=c++17
+#CC = g++
+#CCFLAGS = -std=c++17
 
 all: $(EXECS)
 

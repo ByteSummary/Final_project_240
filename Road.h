@@ -26,18 +26,20 @@ class Road {
         float prob_new_vehicle;
         VehicleBase* newVehicle;
         VehicleBase* endVehicle;
+        TrafficLight* trafficlight;
 
     public: 
         // Road();
-        Road(Direction direction, float spawn_new_vehicle_rate);
-        Road(const Road& other);
-        Road& Road::operator=(const Road& other);
-        Road::Road(Road&& other)noexcept;
-        Road& Road::operator=(Road&&)noexcept;
+        Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight* trafficlight);
+        // Road(const Road& other);
+        // Road& Road::operator=(const Road& other);
+        // Road::Road(Road&& other)noexcept;
+        // Road& Road::operator=(Road&&)noexcept;
         ~Road();
 
         void moveVehicles(float randnum);
         void spawnNewVehicle(float randnum);
+        TrafficLight* getTrafficLight();
 
         inline std::vector<VehicleBase*> getVehicleBaseVector() {return this->roadBound;}
 

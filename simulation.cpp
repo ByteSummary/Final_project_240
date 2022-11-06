@@ -137,6 +137,8 @@ int main(int argc, char *argv[])
     float proportion_of_SUVs = 0.8;
     // float proportion_of_trucks = 1 - (proportion_of_cars + proportion_of_SUVs);
     float proportion_of_trucks = 1.1;
+    int red_east_west = green_north_south + yellow_north_south;
+    int red_north_south = green_east_west + yellow_east_west;
 
     float randnum = 0.1; // need to fix this
 
@@ -147,17 +149,20 @@ int main(int argc, char *argv[])
 
     Animator anim(number_of_sections_before_intersection);
 
-    anim.setLightNorthSouth(LightColor::red);
-    anim.setLightEastWest(LightColor::green);
+    TrafficLight lightEW(LightColor::red, green_east_west, yellow_east_west, red_east_west);
+    TrafficLight lightNS(LightColor::green, green_north_south, yellow_north_south, red_east_west);
+
+    anim.setLightNorthSouth(lightNS.getLightColor());
+    anim.setLightEastWest(lightEW.getLightColor());
 
     int count_north_south = 0;
     int count_east_west = 0;
     bool east_west_go = true;
 
-    Road westbound(Direction::west, prob_new_vehicle_westbound);
-    Road northbound(Direction::north, prob_new_vehicle_westbound);
-    Road southbound(Direction::south, prob_new_vehicle_westbound);
-    Road eastbound(Direction::east, prob_new_vehicle_westbound);
+    Road westbound(Direction::west, prob_new_vehicle_westbound, &lightEW);
+    Road northbound(Direction::north, prob_new_vehicle_westbound, &lightNS);
+    Road southbound(Direction::south, prob_new_vehicle_westbound, &lightNS);
+    Road eastbound(Direction::east, prob_new_vehicle_westbound, &lightEW);
 
     anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
     anim.setVehiclesWestbound(westbound.getVehicleBaseVector());
@@ -173,13 +178,15 @@ int main(int argc, char *argv[])
         if (east_west_go)
         {
             // east west light is green/yellow
-            if (count_east_west == green_east_west)
+            if (lightEW.getLightColor() == LightColor::green)
             {   
+                lightEW.setLightColor(LightColor::yellow);
                 anim.setLightEastWest(LightColor::yellow);
                 count_east_west++;
             }
-            else if (count_east_west == green_east_west + yellow_east_west)
+            else if (lightEW.getLightColor() == LightColor::red)
             {
+                lightEW.setLightColor(LightColor::red);
                 anim.setLightEastWest(LightColor::red);
                 anim.setLightNorthSouth(LightColor::green);
                 count_east_west = 0;
@@ -193,13 +200,14 @@ int main(int argc, char *argv[])
         else
         {
             // north south light is green/yellow
-            if (count_north_south == green_north_south)
+            if (lightNS.getLightColor() == LightColor::green)
             {
                 anim.setLightNorthSouth(LightColor::yellow);
                 count_north_south++;
             }
-            else if (count_north_south == green_north_south + yellow_north_south)
+            else if (lightNS.getLightColor() == LightColor::red)
             {
+                lightEW.setLightColor(LightColor::green);
                 anim.setLightEastWest(LightColor::green);
                 anim.setLightNorthSouth(LightColor::red);
                 count_north_south = 0;
