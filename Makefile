@@ -2,8 +2,8 @@ EXECS = simulation #testAnimator
 OBJS = simulation.o Animator.o VehicleBase.o Road.o TrafficLight.o #testAnimator.o
 
 #### use next two lines for Mac
-CC = clang++
-CCFLAGS = -std=gnu++2a -stdlib=libc++
+CC = g++
+CCFLAGS = -std=c++17
 
 #### use next two lines for mathcs* machines:
 #CC = g++
