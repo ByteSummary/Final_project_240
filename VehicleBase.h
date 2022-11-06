@@ -10,6 +10,9 @@ class VehicleBase
 {
    public:
       static int vehicleCount;
+      static float carRightTurnProb;
+      static float suvRightTurnProb;
+      static float truckRightTurnProb;
 
    private:
       int         vehicleID;
@@ -21,7 +24,7 @@ class VehicleBase
       bool        isTurningRight;
 
    public:
-      VehicleBase(VehicleType type, Direction originalDirection );
+      VehicleBase(VehicleType type, Direction originalDirection, float randnum);
       VehicleBase(const VehicleBase& other);
       VehicleBase& operator=(const VehicleBase& other);
       VehicleBase(VehicleBase&& other)noexcept;
@@ -30,6 +33,9 @@ class VehicleBase
 
       void incrementVehicleLengthCount();
       void decrementVehicleLengthCount();
+      void resetVehicleLengthCount();
+      void turnRight(float randnum);
+      void setIsTurningRight(bool value);
 
       inline int getVehicleID() const { return this->vehicleID; }
 
@@ -37,6 +43,10 @@ class VehicleBase
       inline Direction   getVehicleOriginalDirection() const { return this->vehicleDirection; }
       inline int getVehicleLength() const { return this->vehicleLength; }
       inline int getVehicleLengthCount() const { return this->vehicleLengthCount; }
+      inline bool getWillTurnRight() const{ return this->willTurnRight; }
+      inline bool getIsTurningRight() const{ return this->isTurningRight; }
+
+      static void settingRightTurnProb(float proportion_right_turn_cars, float proportion_right_turn_SUVs, float proportion_right_turn_trucks);
 };
 
 #endif

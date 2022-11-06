@@ -8,7 +8,6 @@
 #include <iostream>
 
 int Road::sections_before_intersection = 0;
-LightColor getLightColor();
 
 VehicleType Road::lowest_vehicle = VehicleType::car;
 float Road::lowest_proportion = 0.0;
@@ -23,19 +22,21 @@ VehicleType Road::highest_vehicle = VehicleType::car;
 //     bool finishedNewVehicle;
 // }
 
-Road::Road(Direction direction, float spawn_new_vehicle_rate){
+Road::Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight& stoplight)
+    : roadDirection(direction),
+      trafficLight(stoplight),
+      prob_new_vehicle(spawn_new_vehicle_rate),
+      newVehicle(nullptr),
+      endVehicle(nullptr)
+    {
     roadBound = std::vector<VehicleBase*>(sections_before_intersection * 2 + 2, nullptr);
-    roadDirection = direction;
-    prob_new_vehicle = spawn_new_vehicle_rate;
-    newVehicle = nullptr;
-    endVehicle = nullptr;
 }
 
 
-Road::Road(const Road& other){}
-Road& Road::operator=(const Road& other){}
-Road::Road(Road&& other)noexcept{}
-Road& Road::operator=(Road&&)noexcept{}
+// Road::Road(const Road& other){}
+// Road& Road::operator=(const Road& other){}
+// Road::Road(Road&& other)noexcept{}
+// Road& Road::operator=(Road&&)noexcept{}
 Road::~Road(){
     if (newVehicle != nullptr) {
         delete newVehicle;
@@ -51,7 +52,7 @@ void Road::moveVehicles(float randnum){
         {
 
             // at intersection
-            if (vehicle_pointer_counter + 1 == sections_before_intersection - 1)
+            if (vehicle_pointer_counter == sections_before_intersection - 1)
             {
             
                 /*
@@ -63,22 +64,45 @@ void Road::moveVehicles(float randnum){
                 6. If color is green, vehicle can continue forward
                 7. If color is green and vehicle is going to turn right, turn right.
                 */
-                // // move forward at intersection or turn right
-                // VehicleType vehicleIntersection = roadBound[vehicle_pointer_counter]->getVehicleType();
+                // move forward at intersection or turn right
+                VehicleBase* vehicle_at_intersection = roadBound[vehicle_pointer_counter];
+                int length_of_vehicle = vehicle_at_intersection->getVehicleLength();
+                bool right_turn = vehicle_at_intersection->getWillTurnRight();
 
-                // // turn right
-                // if (randnum <= prob_right_turn_for_vehicle)
-                // {
+                // check light
+                int& time_remaining = trafficLight.getTimeChange();
+                LightColor& trafficLightColor = trafficLight.getLightColor();
+                bool go = true;
 
-                // }
-                // // go straight
-                // else
-                // {
+                if (trafficLightColor == LightColor::red)
+                {
+                    go = false;
+                }
 
-                // }
+                // turn right
+                if (right_turn)
+                {
+                    // can turn right
+                    if (length_of_vehicle <= time_remaining && go)
+                    {
+                        vehicle_at_intersection->setIsTurningRight(true);
+                        roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
+                        roadBound[vehicle_pointer_counter] = nullptr;
+                    }
+                }
+                // go straight
+                else
+                {
+                    // can move straight
+                    if ((length_of_vehicle <= time_remaining) && go)
+                    {
+                        roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
+                        roadBound[vehicle_pointer_counter] = nullptr;
+                    }
+                }
             }
             // at end of the road
-            if (vehicle_pointer_counter == (sections_before_intersection * 2 + 2) - 1)
+            else if (vehicle_pointer_counter == (sections_before_intersection * 2 + 2) - 1)
             {
                 if(endVehicle == nullptr)
                 {
@@ -100,8 +124,11 @@ void Road::moveVehicles(float randnum){
             // not at end of road
             else
             {
-                roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
-                roadBound[vehicle_pointer_counter] = nullptr;
+                if (roadBound[vehicle_pointer_counter + 1] == nullptr)
+                {
+                    roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
+                    roadBound[vehicle_pointer_counter] = nullptr;
+                }
             }
         }
     }
@@ -115,23 +142,17 @@ void Road::spawnNewVehicle(float randnum){
         // needs to complete vehicle during creation
         if (roadBound[0] == nullptr && randnum <= prob_new_vehicle)
         {
-            // VehicleType new_vehicle_type = VehicleType::car;
-            if (randnum <= lowest_proportion)
+            float randnumRightTurn = 0.0;
+            VehicleType new_vehicle_type = highest_vehicle;
+            if (randnum < lowest_proportion)
             {
-                // new_vehicle_type = lowest_vehicle;
-                newVehicle = new VehicleBase(lowest_vehicle, roadDirection);
+                new_vehicle_type = lowest_vehicle;
             }
-            else if (randnum <= lowest_proportion + middle_proportion)
+            else if (randnum < lowest_proportion + middle_proportion)
             {
-                // new_vehicle_type = middle_vehicle;
-                newVehicle = new VehicleBase(middle_vehicle, roadDirection);
+                new_vehicle_type = middle_vehicle;
             }
-            else
-            {
-                // new_vehicle_type = highest_vehicle;
-                newVehicle = new VehicleBase(highest_vehicle, roadDirection);
-            }
-            // newVehicle = new VehicleBase(new_vehicle_type, roadDirection);
+            newVehicle = new VehicleBase(new_vehicle_type, roadDirection, randnumRightTurn);
             roadBound[0] = newVehicle;
             newVehicle->incrementVehicleLengthCount();
         }
@@ -143,6 +164,21 @@ void Road::spawnNewVehicle(float randnum){
         if (newVehicle->getVehicleLengthCount() == newVehicle->getVehicleLength())
         {
             newVehicle = nullptr;
+        }
+    }
+}
+
+void Road::changeRoadBound(Road& right_road_bound){
+    // move forward at intersection or turn right
+    VehicleBase* vehicle_in_intersection = roadBound[sections_before_intersection];
+    if (vehicle_in_intersection != nullptr)
+    {
+        bool is_turning_right = vehicle_in_intersection->getIsTurningRight();
+        if (is_turning_right) 
+        {
+            std::vector<VehicleBase*>& right_road_bound_vector = right_road_bound.getVehicleBaseVector();
+            right_road_bound_vector[sections_before_intersection + 1] = vehicle_in_intersection;
+            roadBound[sections_before_intersection] = nullptr;
         }
     }
 }

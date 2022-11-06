@@ -138,6 +138,10 @@ int main(int argc, char *argv[])
     // float proportion_of_trucks = 1 - (proportion_of_cars + proportion_of_SUVs);
     float proportion_of_trucks = 1.1;
 
+    float proportion_right_turn_cars = 0.9;
+    float proportion_right_turn_SUVs = 0.9;
+    float proportion_right_turn_trucks = 0.9;
+
     float randnum = 0.1; // need to fix this
 
     char dummy;
@@ -145,19 +149,25 @@ int main(int argc, char *argv[])
     Road::initRoadSections(number_of_sections_before_intersection);
     Road::settingVehicleProportions(proportion_of_cars, proportion_of_SUVs, proportion_of_trucks);
 
+    VehicleBase::settingRightTurnProb(proportion_right_turn_cars, proportion_right_turn_SUVs, proportion_right_turn_trucks);
+
     Animator anim(number_of_sections_before_intersection);
 
-    anim.setLightNorthSouth(LightColor::red);
-    anim.setLightEastWest(LightColor::green);
+    TrafficLight eastWestLight(LightColor::green, green_east_west, yellow_east_west);
+    TrafficLight northSouthLight(LightColor::red, green_north_south, yellow_north_south);
+    TrafficLight* go = &eastWestLight;
 
-    int count_north_south = 0;
-    int count_east_west = 0;
+    anim.setLightEastWest(eastWestLight.getLightColor());
+    anim.setLightNorthSouth(northSouthLight.getLightColor());
+
+    // int count_north_south = 0;
+    // int count_east_west = 0;
     bool east_west_go = true;
 
-    Road westbound(Direction::west, prob_new_vehicle_westbound);
-    Road northbound(Direction::north, prob_new_vehicle_westbound);
-    Road southbound(Direction::south, prob_new_vehicle_westbound);
-    Road eastbound(Direction::east, prob_new_vehicle_westbound);
+    Road westbound(Direction::west, prob_new_vehicle_westbound, eastWestLight);
+    Road northbound(Direction::north, prob_new_vehicle_northbound, northSouthLight);
+    Road southbound(Direction::south, prob_new_vehicle_southbound, northSouthLight);
+    Road eastbound(Direction::east, prob_new_vehicle_eastbound, eastWestLight);
 
     anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
     anim.setVehiclesWestbound(westbound.getVehicleBaseVector());
@@ -168,52 +178,40 @@ int main(int argc, char *argv[])
 
     for (int time = 1; time <= maximum_simulated_time; time++)
     {
+        // for trafficLight go, check count then change color or decrement count
+        go->timeLightChange();
 
-        // change stop/go lights
-        if (east_west_go)
+        if (east_west_go) 
         {
-            // east west light is green/yellow
-            if (count_east_west == green_east_west)
-            {   
-                anim.setLightEastWest(LightColor::yellow);
-                count_east_west++;
-            }
-            else if (count_east_west == green_east_west + yellow_east_west)
+            anim.setLightEastWest(go->getLightColor());
+        }
+        else 
+        {
+            anim.setLightNorthSouth(go->getLightColor());
+        }
+
+        if (go->getLightColor() == LightColor::red)
+        {
+            if (east_west_go) 
             {
-                anim.setLightEastWest(LightColor::red);
-                anim.setLightNorthSouth(LightColor::green);
-                count_east_west = 0;
+                go = &northSouthLight;
+                go->setGreen();
+                anim.setLightNorthSouth(go->getLightColor());
                 east_west_go = false;
             }
-            else
+            else 
             {
-                count_east_west++;
-            }
-        }
-        else
-        {
-            // north south light is green/yellow
-            if (count_north_south == green_north_south)
-            {
-                anim.setLightNorthSouth(LightColor::yellow);
-                count_north_south++;
-            }
-            else if (count_north_south == green_north_south + yellow_north_south)
-            {
-                anim.setLightEastWest(LightColor::green);
-                anim.setLightNorthSouth(LightColor::red);
-                count_north_south = 0;
+                go = &eastWestLight;
+                go->setGreen();
+                anim.setLightEastWest(go->getLightColor());
                 east_west_go = true;
             }
-            else
-            {
-                count_north_south++;
-            }
         }
-
         
-        westbound.spawnNewVehicle(randnum);
         westbound.moveVehicles(randnum);
+        northbound.moveVehicles(randnum);
+        westbound.spawnNewVehicle(randnum);
+        westbound.changeRoadBound(northbound);
 
         anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
         anim.setVehiclesWestbound(westbound.getVehicleBaseVector());

@@ -4,38 +4,30 @@
 #include "VehicleBase.h"
 
 int VehicleBase::vehicleCount = 0;
+float VehicleBase::carRightTurnProb = 0.0;
+float VehicleBase::suvRightTurnProb = 0.0;
+float VehicleBase::truckRightTurnProb = 0.0;
+
 VehicleType NULLTYPE;
 Direction NULLDIRECTION;
 
-
-// VehicleBase::VehicleBase(VehicleType type, Direction direction) {
-//       vehicleID = 0;
-//       vehicleType = type;
-//       vehicleDirection = direction;
-
-//       if (type == VehicleType::car){
-//         vehicleLength = 2;
-//       } else if (type == VehicleType::suv){
-//         vehicleLength = 3;
-//       } else {
-//         vehicleLength = 4;
-//       }
-// }
-
 // common use constructor
-VehicleBase::VehicleBase(VehicleType type, Direction direction, bool turnRight)
+VehicleBase::VehicleBase(VehicleType type, Direction direction, float randnum)
     : vehicleID(VehicleBase::vehicleCount++), 
       vehicleType(type),
       vehicleDirection(direction)
 {
   if (vehicleType == VehicleType::car){
-      vehicleLength = 2;
-    } else if (vehicleType == VehicleType::suv){
-      vehicleLength = 3;
-    } else {
-      vehicleLength = 4;
-    }
+    vehicleLength = 2;
+  } else if (vehicleType == VehicleType::suv){
+    vehicleLength = 3;
+  } else {
+    vehicleLength = 4;
+  }
   vehicleLengthCount = 0;
+
+  turnRight(randnum);
+  isTurningRight = false;
 }
 
 // Copy constructor
@@ -65,10 +57,14 @@ VehicleBase& VehicleBase::operator=(const VehicleBase& other) {
 VehicleBase::VehicleBase(VehicleBase&& other)noexcept:
   vehicleID(other.vehicleID),
   vehicleType(other.vehicleType),
-  vehicleDirection(other.vehicleDirection) {
+  vehicleDirection(other.vehicleDirection),
+  vehicleLength(other.vehicleLength),
+  vehicleLengthCount(other.vehicleLengthCount) {
     other.vehicleID = 0;
     other.vehicleType = NULLTYPE;
     other.vehicleDirection = NULLDIRECTION;
+    other.vehicleLength = 0;
+    other.vehicleLengthCount = 0;
   }
 
 // move assignment operator constructor
@@ -79,9 +75,13 @@ VehicleBase& VehicleBase::operator=(VehicleBase&& other)noexcept {
   vehicleID = other.vehicleID;
   vehicleType = other.vehicleType;
   vehicleDirection = other.vehicleDirection;
+  vehicleLength = other.vehicleLength;
+  vehicleLengthCount = other.vehicleLengthCount;
   other.vehicleID = 0;
   other.vehicleType = NULLTYPE;
   other.vehicleDirection = NULLDIRECTION;
+  other.vehicleLength = 0;
+  other.vehicleLengthCount = 0;
   return *this;
 }
 
@@ -94,6 +94,43 @@ void VehicleBase::incrementVehicleLengthCount(){
 
 void VehicleBase::decrementVehicleLengthCount(){
   vehicleLengthCount = vehicleLengthCount - 1;
+}
+
+void VehicleBase::resetVehicleLengthCount(){
+  if (vehicleType == VehicleType::car){
+    vehicleLengthCount = 2;
+  } else if (vehicleType == VehicleType::suv){
+    vehicleLengthCount = 3;
+  } else {
+    vehicleLengthCount = 4;
+  }
+}
+
+void VehicleBase::turnRight(float randnum){
+  float rightTurnProb = 0.0;
+  if (vehicleType == VehicleType::car){
+    rightTurnProb = carRightTurnProb;
+  } else if (vehicleType == VehicleType::suv){
+    rightTurnProb = suvRightTurnProb;
+  } else {
+    rightTurnProb = truckRightTurnProb;
+  }
+
+  if (randnum < rightTurnProb){
+    willTurnRight = true;
+  } else {
+    willTurnRight = false;
+  }
+}
+
+void VehicleBase::setIsTurningRight(bool value){
+  isTurningRight = value;
+}
+
+void VehicleBase::settingRightTurnProb(float proportion_right_turn_cars, float proportion_right_turn_SUVs, float proportion_right_turn_trucks){
+  carRightTurnProb = proportion_right_turn_cars;
+  suvRightTurnProb = proportion_right_turn_SUVs;
+  truckRightTurnProb = proportion_right_turn_trucks;
 }
 
 #endif

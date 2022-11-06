@@ -26,20 +26,22 @@ class Road {
         float prob_new_vehicle;
         VehicleBase* newVehicle;
         VehicleBase* endVehicle;
+        TrafficLight& trafficLight;
 
     public: 
         // Road();
-        Road(Direction direction, float spawn_new_vehicle_rate);
-        Road(const Road& other);
-        Road& Road::operator=(const Road& other);
-        Road::Road(Road&& other)noexcept;
-        Road& Road::operator=(Road&&)noexcept;
+        Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight& stoplight);
+        // Road(const Road& other);
+        // Road& operator=(const Road& other);
+        // Road(Road&& other)noexcept;
+        // Road& operator=(Road&&)noexcept;
         ~Road();
 
         void moveVehicles(float randnum);
         void spawnNewVehicle(float randnum);
+        void changeRoadBound(Road& right_road_bound);
 
-        inline std::vector<VehicleBase*> getVehicleBaseVector() {return this->roadBound;}
+        inline std::vector<VehicleBase*>& getVehicleBaseVector() {return this->roadBound;}
 
         inline static void initRoadSections(int number_of_sections_before_interseciton) {sections_before_intersection = number_of_sections_before_interseciton;}
         static void settingVehicleProportions(float proportion_of_cars, float proportion_of_SUVs, float proportion_of_trucks);
