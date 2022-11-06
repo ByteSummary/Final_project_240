@@ -50,7 +50,6 @@ void Road::moveVehicles(float randnum){
         // checking if pointing to nullptr
         if (roadBound[vehicle_pointer_counter] != nullptr)
         {
-
             // at intersection
             if (vehicle_pointer_counter == sections_before_intersection - 1)
             {
@@ -65,6 +64,7 @@ void Road::moveVehicles(float randnum){
                 */
                 // move forward at intersection or turn right
                 VehicleBase* vehicle_at_intersection = roadBound[vehicle_pointer_counter];
+                vehicle_at_intersection->turnRight(randnum);
                 int length_of_vehicle = vehicle_at_intersection->getVehicleLength();
                 bool right_turn = vehicle_at_intersection->getWillTurnRight();
 
@@ -72,14 +72,16 @@ void Road::moveVehicles(float randnum){
                 int& time_remaining = trafficLight.getTimeChange();
                 LightColor& trafficLightColor = trafficLight.getLightColor();
                 bool go = true;
+                
+        
 
                 if (trafficLightColor == LightColor::red)
                 {
                     go = false;
                 }
-
+                
                 // turn right
-                if (right_turn)
+                else if (right_turn == true)
                 {
                     // can turn right
                     if (length_of_vehicle <= time_remaining && go)
@@ -89,11 +91,11 @@ void Road::moveVehicles(float randnum){
                         roadBound[vehicle_pointer_counter] = nullptr;
                     }
                 }
-                // go straight
-                else
+                //go straight
+                else if (right_turn == false)
                 {
                     // can move straight
-                    if ((length_of_vehicle <= time_remaining) && go)
+                    if (length_of_vehicle <= time_remaining && go)
                     {
                         roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
                         roadBound[vehicle_pointer_counter] = nullptr;

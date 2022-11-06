@@ -123,6 +123,7 @@ void VehicleBase::turnRight(float randnum){
   }
 }
 
+
 void VehicleBase::setIsTurningRight(bool value){
   isTurningRight = value;
 }

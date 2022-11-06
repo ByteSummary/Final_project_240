@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <iterator>
+#include <stdlib.h>
 #include <map>
 #include <tuple>
 #include "Animator.h"
@@ -141,10 +142,10 @@ int main(int argc, char *argv[])
     int red_north_south = green_east_west + yellow_east_west;
 
     float proportion_right_turn_cars = 0.9;
-    float proportion_right_turn_SUVs = 0.9;
-    float proportion_right_turn_trucks = 0.9;
+    float proportion_right_turn_SUVs = 0.6;
+    float proportion_right_turn_trucks = 0.6;
 
-    float randnum = 0.1; // need to fix this
+    float randnum = 0.5; // need to fix this
 
     char dummy;
 
@@ -211,9 +212,9 @@ int main(int argc, char *argv[])
         }
         
         westbound.moveVehicles(randnum);
-        northbound.moveVehicles(randnum);
         westbound.spawnNewVehicle(randnum);
         westbound.changeRoadBound(northbound);
+        northbound.moveVehicles(randnum);
 
         anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
         anim.setVehiclesWestbound(westbound.getVehicleBaseVector());
