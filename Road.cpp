@@ -256,9 +256,5 @@ void Road::settingVehicleProportions(float proportion_of_cars, float proportion_
         }
     }
 }
-
-TrafficLight* Road::getTrafficLight() {
-    return trafficlight;
-}
     
 #endif
