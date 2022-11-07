@@ -55,7 +55,7 @@ Road::~Road(){
     }
 }
 
-void Road::moveVehicles(float randnum){
+void Road::moveVehicles(){
     // move vehicles forward
     for (int vehicle_pointer_counter = (sections_before_intersection * 2 + 2) - 1; vehicle_pointer_counter >= 0; vehicle_pointer_counter--)
     {
@@ -161,21 +161,20 @@ void Road::moveVehicles(float randnum){
     }
 }
 
-void Road::spawnNewVehicle(float randnum){
+void Road::spawnNewVehicle(float randnumSpawn, float randnumRightTurn){
     // call function to add vehicles in each road
     if (newVehicle == nullptr)
     {
         // if first section of road is open and randnum is inside probability
         // needs to complete vehicle during creation
-        if (roadBound[0] == nullptr && randnum <= prob_new_vehicle)
+        if (roadBound[0] == nullptr && randnumSpawn < prob_new_vehicle)
         {
-            float randnumRightTurn = 0.0;
             VehicleType new_vehicle_type = highest_vehicle;
-            if (randnum < lowest_proportion)
+            if (randnumSpawn < lowest_proportion)
             {
                 new_vehicle_type = lowest_vehicle;
             }
-            else if (randnum < lowest_proportion + middle_proportion)
+            else if (randnumSpawn < lowest_proportion + middle_proportion)
             {
                 new_vehicle_type = middle_vehicle;
             }
@@ -186,11 +185,14 @@ void Road::spawnNewVehicle(float randnum){
     }
     else
     {
-        roadBound[0] = newVehicle;
-        newVehicle->incrementVehicleLengthCount();
-        if (newVehicle->getVehicleLengthCount() == newVehicle->getVehicleLength())
+        if (roadBound[0] == nullptr)
         {
-            newVehicle = nullptr;
+            roadBound[0] = newVehicle;
+            newVehicle->incrementVehicleLengthCount();
+            if (newVehicle->getVehicleLengthCount() == newVehicle->getVehicleLength())
+            {
+                newVehicle = nullptr;
+            }
         }
     }
 }

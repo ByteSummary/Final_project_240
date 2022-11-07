@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <random> 
 #include <string>
 #include <iterator>
 #include <stdlib.h>
@@ -12,10 +13,10 @@
 
 int main(int argc, char *argv[])
 {
-
     std::map<std::string, float> compositionFile;
     std::map<std::string, float>::iterator itr;
-    LightColor lightcolor;
+    std::mt19937 rng; // construct an instance of mt19937 
+    std::uniform_real_distribution<double> rand_double(0.0, 1.0); // rand_double will use rng to generate uniform(0,1) variates 
     std::string category;
     float value = 0;
 
@@ -134,16 +135,20 @@ int main(int argc, char *argv[])
     float prob_new_vehicle_southbound = 0.1;
     float prob_new_vehicle_eastbound = 0.15;
     float prob_new_vehicle_westbound = 0.15;
-    float proportion_of_cars = 0.3;
-    float proportion_of_SUVs = 0.8;
+    float proportion_of_cars = 0.6;
+    float proportion_of_SUVs = 0.3;
     // float proportion_of_trucks = 1 - (proportion_of_cars + proportion_of_SUVs);
-    float proportion_of_trucks = 1.1;
+    float proportion_of_trucks = 0.1;
     int red_east_west = green_north_south + yellow_north_south;
     int red_north_south = green_east_west + yellow_east_west;
 
-    float proportion_right_turn_cars = 0.9;
-    float proportion_right_turn_SUVs = 0.6;
-    float proportion_right_turn_trucks = 0.6;
+    float proportion_right_turn_cars = 0.25;
+    float proportion_right_turn_SUVs = 0.1;
+    float proportion_right_turn_trucks = 0.15;
+
+    int initialSeed = 8675309; 
+    // int initialSeed = stoi(argv[1]);
+    rng.seed(initialSeed); // set the initial seed of the rng 
 
     float randnum = 0.5; // need to fix this
 
@@ -211,10 +216,18 @@ int main(int argc, char *argv[])
             }
         }
         
-        westbound.moveVehicles(randnum);
-        northbound.moveVehicles(randnum);
-        westbound.spawnNewVehicle(randnum);
+        westbound.moveVehicles();
+        northbound.moveVehicles();
+        eastbound.moveVehicles();
+        southbound.moveVehicles();
+        westbound.spawnNewVehicle(rand_double(rng), rand_double(rng));
+        northbound.spawnNewVehicle(rand_double(rng), rand_double(rng));
+        eastbound.spawnNewVehicle(rand_double(rng), rand_double(rng));
+        southbound.spawnNewVehicle(rand_double(rng), rand_double(rng));
         westbound.changeRoadBound(northbound);
+        northbound.changeRoadBound(eastbound);
+        eastbound.changeRoadBound(southbound);
+        southbound.changeRoadBound(westbound);
 
         anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
         anim.setVehiclesWestbound(westbound.getVehicleBaseVector());
@@ -223,13 +236,13 @@ int main(int argc, char *argv[])
         anim.draw(time);
         std::cin.get(dummy);
 
-        if (time % 2 == 0 || time % 3 == 0) 
-        {
-            randnum = 1;
-        }
-        else
-        {
-            randnum = 0.1;
-        }
+        // if (time % 2 == 0 || time % 3 == 0) 
+        // {
+        //     randnum = 1;
+        // }
+        // else
+        // {
+        //     randnum = 0.1;
+        // }
     }
 }
