@@ -79,10 +79,12 @@ void Road::moveVehicles(float randnum){
                 // vehicle_at_intersection->turnRight(randnum);
                 int length_of_vehicle = vehicle_at_intersection->getVehicleLength();
                 bool right_turn = vehicle_at_intersection->getWillTurnRight();
+                bool is_turning_right = vehicle_at_intersection->getIsTurningRight();
+                bool is_moving_forward = vehicle_at_intersection->getIsMovingForward();
 
                 // check light
-                int& time_remaining = trafficLight.getTimeChange();
-                LightColor& trafficLightColor = trafficLight.getLightColor();
+                int time_remaining = trafficLight.getTimeChange();
+                LightColor trafficLightColor = trafficLight.getLightColor();
                 bool go = true;
                 
                 if (trafficLightColor == LightColor::red)
@@ -90,26 +92,40 @@ void Road::moveVehicles(float randnum){
                     go = false;
                 }
                 
-                // turn right
-                else if (right_turn == true)
+                // turn right and has not started
+                if (right_turn == true && is_turning_right == false)
                 {
                     // can turn right
-                    if (length_of_vehicle <= time_remaining && go)
+                    int length_of_vehicle_right = length_of_vehicle + 1;
+                    if (length_of_vehicle_right <= time_remaining && go)
                     {
                         vehicle_at_intersection->setIsTurningRight(true);
                         roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
                         roadBound[vehicle_pointer_counter] = nullptr;
                     }
                 }
-                //go straight
-                else if (right_turn == false)
+                // turn right and has started
+                else if (right_turn == true && is_turning_right == true)
+                {
+                    roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
+                    roadBound[vehicle_pointer_counter] = nullptr;
+                }
+                //go straight and has not started
+                else if (right_turn == false && is_moving_forward == false)
                 {
                     // can move straight
-                    if (length_of_vehicle <= time_remaining && go)
+                    int length_of_vehicle_straight = length_of_vehicle + 2;
+                    if (length_of_vehicle_straight <= time_remaining && go)
                     {
+                        vehicle_at_intersection->setIsMovingForward(true);
                         roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
                         roadBound[vehicle_pointer_counter] = nullptr;
                     }
+                }
+                else
+                {
+                    roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
+                    roadBound[vehicle_pointer_counter] = nullptr;
                 }
             }
             // at end of the road

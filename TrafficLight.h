@@ -23,10 +23,10 @@ class TrafficLight {
         // int getTimeGreen();
         // int getTimeYellow();
         // int getTimeRed();
-        int& getTimeChange();
+        int getTimeChange();
         void timeLightChange();
         // int getTimeBeforeChange();
-        LightColor& getLightColor();
+        LightColor getLightColor();
         void setLightColor(LightColor newColor);
         void setGreen();
 

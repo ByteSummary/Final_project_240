@@ -28,6 +28,7 @@ VehicleBase::VehicleBase(VehicleType type, Direction direction, float randnum)
 
   turnRight(randnum);
   isTurningRight = false;
+  isMovingForward = false;
 }
 
 // Copy constructor
@@ -126,6 +127,10 @@ void VehicleBase::turnRight(float randnum){
 
 void VehicleBase::setIsTurningRight(bool value){
   isTurningRight = value;
+}
+
+void VehicleBase::setIsMovingForward(bool value){
+  isMovingForward = value;
 }
 
 void VehicleBase::settingRightTurnProb(float proportion_right_turn_cars, float proportion_right_turn_SUVs, float proportion_right_turn_trucks){

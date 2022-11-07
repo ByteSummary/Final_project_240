@@ -84,7 +84,7 @@ TrafficLight& TrafficLight::operator=(TrafficLight&& other)noexcept {
     other.timeChange = 0;
 }
 
-int& TrafficLight::getTimeChange(){
+int TrafficLight::getTimeChange(){
     return timeChange;
 }
 
@@ -105,7 +105,7 @@ void TrafficLight::timeLightChange(){
     }
 }
 
-LightColor& TrafficLight::getLightColor() {
+LightColor TrafficLight::getLightColor() {
     return lightcolor;
 }
 

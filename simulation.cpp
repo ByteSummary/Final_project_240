@@ -212,9 +212,9 @@ int main(int argc, char *argv[])
         }
         
         westbound.moveVehicles(randnum);
+        northbound.moveVehicles(randnum);
         westbound.spawnNewVehicle(randnum);
         westbound.changeRoadBound(northbound);
-        northbound.moveVehicles(randnum);
 
         anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
         anim.setVehiclesWestbound(westbound.getVehicleBaseVector());
