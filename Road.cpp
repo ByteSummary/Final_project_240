@@ -38,8 +38,20 @@ Road::Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight& stop
 // Road::Road(Road&& other)noexcept{}
 // Road& Road::operator=(Road&&)noexcept{}
 Road::~Road(){
-    if (newVehicle != nullptr) {
-        delete newVehicle;
+    VehicleBase* vehicle_pointer = roadBound[0];
+
+    for (int pointer_counter = 1; pointer_counter < (sections_before_intersection * 2 + 2); pointer_counter++)
+    {
+        VehicleBase* next_vehicle_pointer = roadBound[pointer_counter];
+        if (pointer_counter == (sections_before_intersection * 2 + 2) - 1)
+        {
+            delete next_vehicle_pointer;
+            break;
+        } else if (vehicle_pointer != next_vehicle_pointer)
+        {
+            delete vehicle_pointer;
+            vehicle_pointer = next_vehicle_pointer;
+        }
     }
 }
 
@@ -64,7 +76,7 @@ void Road::moveVehicles(float randnum){
                 */
                 // move forward at intersection or turn right
                 VehicleBase* vehicle_at_intersection = roadBound[vehicle_pointer_counter];
-                vehicle_at_intersection->turnRight(randnum);
+                // vehicle_at_intersection->turnRight(randnum);
                 int length_of_vehicle = vehicle_at_intersection->getVehicleLength();
                 bool right_turn = vehicle_at_intersection->getWillTurnRight();
 
@@ -73,8 +85,6 @@ void Road::moveVehicles(float randnum){
                 LightColor& trafficLightColor = trafficLight.getLightColor();
                 bool go = true;
                 
-        
-
                 if (trafficLightColor == LightColor::red)
                 {
                     go = false;
