@@ -7,6 +7,11 @@
 #include <vector>
 #include <iostream>
 
+//Create nulltypes for constructors
+VehicleType NULLTYPE;
+Direction NULLDIRECTION;
+TrafficLight NULLTRAFFICLIGHT;
+
 int Road::sections_before_intersection = 0;
 
 VehicleType Road::lowest_vehicle = VehicleType::car;
@@ -15,34 +20,78 @@ VehicleType Road::middle_vehicle = VehicleType::car;
 float Road::middle_proportion = 0.0;
 VehicleType Road::highest_vehicle = VehicleType::car;
 
-// Road::Road(){
-//     std::vector<VehicleBase*> roadBound;
-//     Direction roadDirection;
-//     VehicleBase* newVehicle;
-//     bool finishedNewVehicle;
-// }
-
-Road::Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight& stoplight)
-    : roadDirection(direction),
-      trafficLight(stoplight),
+Road::Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight& stop_light)
+    : road_Direction(direction),
+      traffic_Light(stop_light),
       prob_new_vehicle(spawn_new_vehicle_rate),
-      newVehicle(nullptr),
-      endVehicle(nullptr)
+      new_Vehicle(nullptr),
+      end_Vehicle(nullptr)
     {
-    roadBound = std::vector<VehicleBase*>(sections_before_intersection * 2 + 2, nullptr);
+    road_Bound = std::vector<VehicleBase*>(sections_before_intersection * 2 + 2, nullptr);
 }
 
+//Copy constructor
+Road::Road(const Road& other):
+    road_Direction(other.road_Direction),
+    traffic_Light(other.traffic_Light),
+    prob_new_vehicle(other.prob_new_vehicle),
+    new_Vehicle(other.new_Vehicle),
+    end_Vehicle(other.end_Vehicle)
+{}
 
-// Road::Road(const Road& other){}
-// Road& Road::operator=(const Road& other){}
-// Road::Road(Road&& other)noexcept{}
-// Road& Road::operator=(Road&&)noexcept{}
+//Copy assignment operator
+Road& Road::operator=(const Road& other){
+    if(this == &other) {
+        return *this;
+    }
+    road_Direction = other.road_Direction;
+    traffic_Light = other.traffic_Light;
+    prob_new_vehicle = other.prob_new_vehicle;
+    new_Vehicle = other.new_Vehicle;
+    end_Vehicle = other.end_Vehicle;
+
+    return *this;
+}
+
+//Move constructor
+Road::Road(Road&& other)noexcept:
+    road_Direction(other.road_Direction),
+    traffic_Light(other.traffic_Light),
+    prob_new_vehicle(other.prob_new_vehicle),
+    new_Vehicle(other.new_Vehicle),
+    end_Vehicle(other.end_Vehicle) {
+        other.road_Direction = NULLDIRECTION;
+        other.traffic_Light = NULLTRAFFICLIGHT;
+        other.prob_new_vehicle = 0;
+        other.new_Vehicle = nullptr;
+        other.end_Vehicle = nullptr;
+    }
+//Move assignment operator
+Road& Road::operator=(Road&& other)noexcept{
+    if (this == &other) {
+        return *this;
+    }
+    road_Direction = other.road_Direction;
+    traffic_Light = other.traffic_Light;
+    prob_new_vehicle = other.prob_new_vehicle;
+    new_Vehicle = other.new_Vehicle;
+    end_Vehicle = other.end_Vehicle;
+    other.road_Direction = NULLDIRECTION;
+    other.traffic_Light = NULLTRAFFICLIGHT;
+    other.prob_new_vehicle = 0;
+    other.new_Vehicle = nullptr;
+    other.end_Vehicle = nullptr;
+    
+    return *this;
+    }
+
+//Destructor
 Road::~Road(){
-    VehicleBase* vehicle_pointer = roadBound[0];
+    VehicleBase* vehicle_pointer = road_Bound[0];
 
     for (int pointer_counter = 1; pointer_counter < (sections_before_intersection * 2 + 2); pointer_counter++)
     {
-        VehicleBase* next_vehicle_pointer = roadBound[pointer_counter];
+        VehicleBase* next_vehicle_pointer = road_Bound[pointer_counter];
         if (pointer_counter == (sections_before_intersection * 2 + 2) - 1)
         {
             delete next_vehicle_pointer;
@@ -55,106 +104,125 @@ Road::~Road(){
     }
 }
 
+//Function that will move vehicles and changes functionality if vechile is about to go into an intersection
 void Road::moveVehicles(){
     // move vehicles forward
     for (int vehicle_pointer_counter = (sections_before_intersection * 2 + 2) - 1; vehicle_pointer_counter >= 0; vehicle_pointer_counter--)
     {
         // checking if pointing to nullptr
-        if (roadBound[vehicle_pointer_counter] != nullptr)
+        if (road_Bound[vehicle_pointer_counter] != nullptr)
         {
             // at intersection
             if (vehicle_pointer_counter == sections_before_intersection - 1)
             {
-                /*
-                1. Get the light color from the intersection
-                2. If color is red, and we can turn right, check if we can turn right then turn right
-                3. If color is red, and we cannot turn right, stop.
-                4. If color is yellow, check time remaining on yellow and make sure it is greater than the length of vehicle at intersection
-                5. If time < length, dont continue, else continue
-                6. If color is green, vehicle can continue forward
-                7. If color is green and vehicle is going to turn right, turn right.
-                */
-                // move forward at intersection or turn right
-                VehicleBase* vehicle_at_intersection = roadBound[vehicle_pointer_counter];
-                // vehicle_at_intersection->turnRight(randnum);
+                // getting vehicle and its details
+                VehicleBase* vehicle_at_intersection = road_Bound[vehicle_pointer_counter];
                 int length_of_vehicle = vehicle_at_intersection->getVehicleLength();
                 bool right_turn = vehicle_at_intersection->getWillTurnRight();
-                bool is_turning_right = vehicle_at_intersection->getIsTurningRight();
-                bool is_moving_forward = vehicle_at_intersection->getIsMovingForward();
+                bool is_crossing_intersection = vehicle_at_intersection->getIsCrossingIntersection();
 
-                // check light
-                int time_remaining = trafficLight.getTimeChange();
-                LightColor trafficLightColor = trafficLight.getLightColor();
+                // checking traffic light: how much time is left and what color it is
+                int time_remaining = traffic_Light.getTimeChange();
+                LightColor trafficLightColor = traffic_Light.getLightColor();
+
+                // go is true when light is not red 
                 bool go = true;
-                
                 if (trafficLightColor == LightColor::red)
                 {
                     go = false;
                 }
                 
                 // turn right and has not started
-                if (right_turn == true && is_turning_right == false)
+                if (right_turn == true && is_crossing_intersection == false)
                 {
-                    // can turn right
+                    // takes length + 1 to leave intersection when turning right
                     int length_of_vehicle_right = length_of_vehicle + 1;
+
+                    // can turn right
                     if (length_of_vehicle_right <= time_remaining && go)
                     {
-                        vehicle_at_intersection->setIsTurningRight(true);
-                        roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
-                        roadBound[vehicle_pointer_counter] = nullptr;
+                        // is starting to move
+                        vehicle_at_intersection->setIsCrossingIntersection(true);
+
+                        // advance vehicle one square forward
+                        road_Bound[vehicle_pointer_counter + 1] = road_Bound[vehicle_pointer_counter];
+                        road_Bound[vehicle_pointer_counter] = nullptr;
                     }
                 }
                 // turn right and has started
-                else if (right_turn == true && is_turning_right == true)
+                else if (right_turn == true && is_crossing_intersection == true)
                 {
-                    roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
-                    roadBound[vehicle_pointer_counter] = nullptr;
+                    // advance vehicle one square forward
+                    road_Bound[vehicle_pointer_counter + 1] = road_Bound[vehicle_pointer_counter];
+                    road_Bound[vehicle_pointer_counter] = nullptr;
                 }
                 //go straight and has not started
-                else if (right_turn == false && is_moving_forward == false)
+                else if (right_turn == false && is_crossing_intersection == false)
                 {
-                    // can move straight
+                    // takes length + 2 to leave intersection when going straight
                     int length_of_vehicle_straight = length_of_vehicle + 2;
+
+                    // can move straight
                     if (length_of_vehicle_straight <= time_remaining && go)
                     {
-                        vehicle_at_intersection->setIsMovingForward(true);
-                        roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
-                        roadBound[vehicle_pointer_counter] = nullptr;
+                        // is starting to move
+                        vehicle_at_intersection->setIsCrossingIntersection(true);
+                        
+                        // advance vehicle one square forward
+                        road_Bound[vehicle_pointer_counter + 1] = road_Bound[vehicle_pointer_counter];
+                        road_Bound[vehicle_pointer_counter] = nullptr;
                     }
                 }
                 else
                 {
-                    roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
-                    roadBound[vehicle_pointer_counter] = nullptr;
+                    // advance vehicle one square forward
+                    road_Bound[vehicle_pointer_counter + 1] = road_Bound[vehicle_pointer_counter];
+                    road_Bound[vehicle_pointer_counter] = nullptr;
                 }
             }
             // at end of the road
             else if (vehicle_pointer_counter == (sections_before_intersection * 2 + 2) - 1)
             {
-                if(endVehicle == nullptr)
+                // checks if there is a vehicle currently leaving road
+                if(end_Vehicle == nullptr)
                 {
-                    endVehicle = roadBound[vehicle_pointer_counter];
-                    roadBound[vehicle_pointer_counter] = nullptr;
-                    endVehicle->decrementVehicleLengthCount();
+                    // sets end vehicle to vehicle at end of road
+                    end_Vehicle = road_Bound[vehicle_pointer_counter];
+
+                    // makes vehicle disappear from road
+                    road_Bound[vehicle_pointer_counter] = nullptr;
+
+                    // decrement vehicle length count to know how much vehicle is still on road
+                    end_Vehicle->decrementVehicleLengthCount();
                 } 
                 else
                 {
-                    roadBound[vehicle_pointer_counter] = nullptr;
-                    endVehicle->decrementVehicleLengthCount();
-                    if (endVehicle->getVehicleLengthCount() == 0)
+                    // makes vehicle disappear from road
+                    road_Bound[vehicle_pointer_counter] = nullptr;
+
+                    // decrement vehicle length count to know how much vehicle is still on road
+                    end_Vehicle->decrementVehicleLengthCount();
+
+                    // checks if all of vehicle is off the road
+                    if (end_Vehicle->getVehicleLengthCount() == 0)
                     {
-                        delete endVehicle;
-                        endVehicle = nullptr;
+                        // deletes the vehicle
+                        delete end_Vehicle;
+
+                        // sets end vehicle to nullptr
+                        end_Vehicle = nullptr;
                     }
                 }
             }
             // not at end of road
             else
             {
-                if (roadBound[vehicle_pointer_counter + 1] == nullptr)
+                // checks if space ahead is empty
+                if (road_Bound[vehicle_pointer_counter + 1] == nullptr)
                 {
-                    roadBound[vehicle_pointer_counter + 1] = roadBound[vehicle_pointer_counter];
-                    roadBound[vehicle_pointer_counter] = nullptr;
+                    // advance vehicle one square forward
+                    road_Bound[vehicle_pointer_counter + 1] = road_Bound[vehicle_pointer_counter];
+                    road_Bound[vehicle_pointer_counter] = nullptr;
                 }
             }
         }
@@ -163,12 +231,13 @@ void Road::moveVehicles(){
 
 void Road::spawnNewVehicle(float randnumSpawn, float randnumRightTurn){
     // call function to add vehicles in each road
-    if (newVehicle == nullptr)
+    // checks if vehicle is already being added and if first section of road is open
+    if (new_Vehicle == nullptr && road_Bound[0] == nullptr)
     {
-        // if first section of road is open and randnum is inside probability
-        // needs to complete vehicle during creation
-        if (roadBound[0] == nullptr && randnumSpawn < prob_new_vehicle)
+        // checks if randnum is inside probability
+        if (randnumSpawn < prob_new_vehicle)
         {
+            // determines type of vehicle to be made based on randnum and proportions
             VehicleType new_vehicle_type = highest_vehicle;
             if (randnumSpawn < lowest_proportion)
             {
@@ -178,36 +247,34 @@ void Road::spawnNewVehicle(float randnumSpawn, float randnumRightTurn){
             {
                 new_vehicle_type = middle_vehicle;
             }
-            newVehicle = new VehicleBase(new_vehicle_type, roadDirection, randnumRightTurn);
-            roadBound[0] = newVehicle;
-            newVehicle->incrementVehicleLengthCount();
+            new_Vehicle = new VehicleBase(new_vehicle_type, road_Direction, randnumRightTurn);
+            road_Bound[0] = new_Vehicle;
+            new_Vehicle->incrementVehicleLengthCount();
         }
     }
     else
     {
-        if (roadBound[0] == nullptr)
+        road_Bound[0] = new_Vehicle;
+        new_Vehicle->incrementVehicleLengthCount();
+        if (new_Vehicle->getVehicleLengthCount() == new_Vehicle->getVehicleLength())
         {
-            roadBound[0] = newVehicle;
-            newVehicle->incrementVehicleLengthCount();
-            if (newVehicle->getVehicleLengthCount() == newVehicle->getVehicleLength())
-            {
-                newVehicle = nullptr;
-            }
+            new_Vehicle = nullptr;
         }
     }
 }
 
+//This function will change direction of the vehicle
 void Road::changeRoadBound(Road& right_road_bound){
     // move forward at intersection or turn right
-    VehicleBase* vehicle_in_intersection = roadBound[sections_before_intersection];
+    VehicleBase* vehicle_in_intersection = road_Bound[sections_before_intersection];
     if (vehicle_in_intersection != nullptr)
     {
-        bool is_turning_right = vehicle_in_intersection->getIsTurningRight();
-        if (is_turning_right) 
+        bool is_crossing_intersection = vehicle_in_intersection->getIsCrossingIntersection();
+        if (is_crossing_intersection) 
         {
             std::vector<VehicleBase*>& right_road_bound_vector = right_road_bound.getVehicleBaseVector();
             right_road_bound_vector[sections_before_intersection + 1] = vehicle_in_intersection;
-            roadBound[sections_before_intersection] = nullptr;
+            road_Bound[sections_before_intersection] = nullptr;
         }
     }
 }

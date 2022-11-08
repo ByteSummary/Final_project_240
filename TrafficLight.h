@@ -10,7 +10,7 @@ class TrafficLight {
         int timeGreen;
         int timeYellow;
         int timeRed;
-        int timeChange; // 0 means on red
+        int timeChange;
 
     public:
         TrafficLight();
@@ -20,12 +20,8 @@ class TrafficLight {
         TrafficLight(TrafficLight&& other)noexcept;
         TrafficLight& operator=(TrafficLight&&)noexcept;
 
-        // int getTimeGreen();
-        // int getTimeYellow();
-        // int getTimeRed();
         int getTimeChange();
         void timeLightChange();
-        // int getTimeBeforeChange();
         LightColor getLightColor();
         void setLightColor(LightColor newColor);
         void setGreen();

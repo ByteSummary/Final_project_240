@@ -21,8 +21,7 @@ class VehicleBase
       int         vehicleLength;
       int         vehicleLengthCount;
       bool        willTurnRight;
-      bool        isTurningRight;
-      bool        isMovingForward;
+      bool        isCrossingIntersection;
 
    public:
       VehicleBase(VehicleType type, Direction originalDirection, float randnum);
@@ -34,10 +33,8 @@ class VehicleBase
 
       void incrementVehicleLengthCount();
       void decrementVehicleLengthCount();
-      void resetVehicleLengthCount();
       void turnRight(float randnum);
-      void setIsTurningRight(bool value);
-      void setIsMovingForward(bool value);
+      void setIsCrossingIntersection(bool value);
 
       inline int getVehicleID() const { return this->vehicleID; }
 
@@ -46,8 +43,7 @@ class VehicleBase
       inline int getVehicleLength() const { return this->vehicleLength; }
       inline int getVehicleLengthCount() const { return this->vehicleLengthCount; }
       inline bool getWillTurnRight() const{ return this->willTurnRight; }
-      inline bool getIsTurningRight() const{ return this->isTurningRight; }
-      inline bool getIsMovingForward() const{ return this->isMovingForward; }
+      inline bool getIsCrossingIntersection() const{ return this->isCrossingIntersection; }
 
       static void settingRightTurnProb(float proportion_right_turn_cars, float proportion_right_turn_SUVs, float proportion_right_turn_trucks);
 };

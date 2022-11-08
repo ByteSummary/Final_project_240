@@ -27,11 +27,10 @@ VehicleBase::VehicleBase(VehicleType type, Direction direction, float randnum)
   vehicleLengthCount = 0;
 
   turnRight(randnum);
-  isTurningRight = false;
-  isMovingForward = false;
+  isCrossingIntersection = false;
 }
 
-// Copy constructor
+// copy constructor
 VehicleBase::VehicleBase(const VehicleBase& other):
       vehicleID(other.vehicleID),
       vehicleType(other.vehicleType),
@@ -89,24 +88,17 @@ VehicleBase& VehicleBase::operator=(VehicleBase&& other)noexcept {
 // destructor
 VehicleBase::~VehicleBase() {}
 
+// increases vehicle length count by 1
 void VehicleBase::incrementVehicleLengthCount(){
   vehicleLengthCount = vehicleLengthCount + 1;
 }
 
+// decreases vehicle length count by 1
 void VehicleBase::decrementVehicleLengthCount(){
   vehicleLengthCount = vehicleLengthCount - 1;
 }
 
-void VehicleBase::resetVehicleLengthCount(){
-  if (vehicleType == VehicleType::car){
-    vehicleLengthCount = 2;
-  } else if (vehicleType == VehicleType::suv){
-    vehicleLengthCount = 3;
-  } else {
-    vehicleLengthCount = 4;
-  }
-}
-
+// determines if vehicle will turn right or not
 void VehicleBase::turnRight(float randnum){
   float rightTurnProb = 0.0;
   if (vehicleType == VehicleType::car){
@@ -124,15 +116,12 @@ void VehicleBase::turnRight(float randnum){
   }
 }
 
-
-void VehicleBase::setIsTurningRight(bool value){
-  isTurningRight = value;
+// sets is crossing intersection to value
+void VehicleBase::setIsCrossingIntersection(bool value){
+  isCrossingIntersection = value;
 }
 
-void VehicleBase::setIsMovingForward(bool value){
-  isMovingForward = value;
-}
-
+// sets static variables for proportion right turn of vehicles
 void VehicleBase::settingRightTurnProb(float proportion_right_turn_cars, float proportion_right_turn_SUVs, float proportion_right_turn_trucks){
   carRightTurnProb = proportion_right_turn_cars;
   suvRightTurnProb = proportion_right_turn_SUVs;

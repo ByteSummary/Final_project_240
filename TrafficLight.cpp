@@ -7,6 +7,7 @@
 
 LightColor NULLCOLOR;
 
+// empty constructor
 TrafficLight::TrafficLight() {
     lightcolor = NULLCOLOR;
     timeGreen = 0;
@@ -15,6 +16,7 @@ TrafficLight::TrafficLight() {
     timeChange = 0;
 }
 
+// common use constructor
 TrafficLight::TrafficLight(LightColor color, int green, int yellow) {
     lightcolor = color;
     timeGreen = green;
@@ -33,6 +35,7 @@ TrafficLight::TrafficLight(LightColor color, int green, int yellow) {
 
 }
 
+// copy constructor
 TrafficLight::TrafficLight(const TrafficLight& other):
     lightcolor(other.lightcolor),
     timeGreen(other.timeGreen),
@@ -41,7 +44,7 @@ TrafficLight::TrafficLight(const TrafficLight& other):
     timeChange(other.timeChange)
     {}
 
-
+// copy assignment operator
 TrafficLight& TrafficLight::operator=(const TrafficLight& other) {
     if (this == &other) {
         return *this;
@@ -55,6 +58,7 @@ TrafficLight& TrafficLight::operator=(const TrafficLight& other) {
     return *this;
 }
 
+// move constructor
 TrafficLight::TrafficLight(TrafficLight&& other)noexcept:
     lightcolor(other.lightcolor),
     timeGreen(other.timeGreen),
@@ -68,6 +72,7 @@ TrafficLight::TrafficLight(TrafficLight&& other)noexcept:
         other.timeChange = 0;
     }
 
+// move assginment operator
 TrafficLight& TrafficLight::operator=(TrafficLight&& other)noexcept {
     if (this == &other) {
         return *this;
@@ -82,12 +87,17 @@ TrafficLight& TrafficLight::operator=(TrafficLight&& other)noexcept {
     other.timeRed = 0;
     other.timeGreen = 0;
     other.timeChange = 0;
+
+    return *this;
 }
 
+// returns time change of traffic light
 int TrafficLight::getTimeChange(){
     return timeChange;
 }
 
+// checks time change of traffic light and changes color or decrements time change
+// depending on the its value
 void TrafficLight::timeLightChange(){
     if (timeChange == timeYellow)
     {
@@ -105,14 +115,18 @@ void TrafficLight::timeLightChange(){
     }
 }
 
+// return light color of traaffic light
 LightColor TrafficLight::getLightColor() {
     return lightcolor;
 }
 
+// sets light color to newColor
 void TrafficLight::setLightColor(LightColor newColor) {
     lightcolor = newColor;
 }
 
+// sets light color to green and sets time change to sum of
+// time yellow and time green
 void TrafficLight::setGreen(){
     setLightColor(LightColor::green);
     timeChange = timeGreen + timeYellow;

@@ -10,13 +10,12 @@
 #include "VehicleBase.h"
 #include "TrafficLight.h"
 #include "Road.h"
+#include "Random.h"
 
 int main(int argc, char *argv[])
 {
     std::map<std::string, float> compositionFile;
     std::map<std::string, float>::iterator itr;
-    std::mt19937 rng; // construct an instance of mt19937 
-    std::uniform_real_distribution<double> rand_double(0.0, 1.0); // rand_double will use rng to generate uniform(0,1) variates 
     std::string category;
     float value = 0;
 
@@ -106,6 +105,7 @@ int main(int argc, char *argv[])
     }
     infile.close();
 
+    // Allows for variables to be used without having to find value in map
     int maximum_simulated_time = (int)compositionFile.find("maximum_simulated_time")->second;
     int number_of_sections_before_intersection = (int)compositionFile.find("number_of_sections_before_intersection")->second;
     int green_north_south = (int)compositionFile.find("green_north_south")->second;
@@ -147,37 +147,43 @@ int main(int argc, char *argv[])
     // float proportion_right_turn_SUVs = 0.1;
     // float proportion_right_turn_trucks = 0.15;
 
-    int initialSeed = 8675309; 
-    // int initialSeed = stoi(argv[1]);
-    rng.seed(initialSeed); // set the initial seed of the rng 
-
-    float randnum = 0.5; // need to fix this
+    int initial_seed = atoi(argv[2]);
+    Random random_number_generator = Random(initial_seed);
 
     char dummy;
 
+    //define the number of road sections
     Road::initRoadSections(number_of_sections_before_intersection);
+    //Set proportion of vehicles that can exist
     Road::settingVehicleProportions(proportion_of_cars, proportion_of_SUVs, proportion_of_trucks);
 
+    //Set proportion of vehicles of specific class that are allowd to turn right
     VehicleBase::settingRightTurnProb(proportion_right_turn_cars, proportion_right_turn_SUVs, proportion_right_turn_trucks);
 
+    //Set animator to include the number of sections before the intersection
     Animator anim(number_of_sections_before_intersection);
 
-    TrafficLight eastWestLight(LightColor::green, green_east_west, yellow_east_west);
-    TrafficLight northSouthLight(LightColor::red, green_north_south, yellow_north_south);
-    TrafficLight* go = &eastWestLight;
+    //Set traffic light colors
+    TrafficLight east_West_Light(LightColor::green, green_east_west, yellow_east_west);
+    TrafficLight north_South_Light(LightColor::red, green_north_south, yellow_north_south);
+    TrafficLight* go = &east_West_Light;
 
-    anim.setLightEastWest(eastWestLight.getLightColor());
-    anim.setLightNorthSouth(northSouthLight.getLightColor());
+    //Use color of each traffic light for the animator
+    anim.setLightEastWest(east_West_Light.getLightColor());
+    anim.setLightNorthSouth(north_South_Light.getLightColor());
 
     // int count_north_south = 0;
     // int count_east_west = 0;
     bool east_west_go = true;
 
-    Road westbound(Direction::west, prob_new_vehicle_westbound, eastWestLight);
-    Road northbound(Direction::north, prob_new_vehicle_northbound, northSouthLight);
-    Road southbound(Direction::south, prob_new_vehicle_southbound, northSouthLight);
-    Road eastbound(Direction::east, prob_new_vehicle_eastbound, eastWestLight);
+    //construct roads from Road class
+    Road westbound(Direction::west, prob_new_vehicle_westbound, east_West_Light);
+    Road northbound(Direction::north, prob_new_vehicle_northbound, north_South_Light);
+    Road southbound(Direction::south, prob_new_vehicle_southbound, north_South_Light);
+    Road eastbound(Direction::east, prob_new_vehicle_eastbound, east_West_Light);
 
+
+    //Animate vehicles in each direction
     anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
     anim.setVehiclesWestbound(westbound.getVehicleBaseVector());
     anim.setVehiclesSouthbound(southbound.getVehicleBaseVector());
@@ -185,6 +191,11 @@ int main(int argc, char *argv[])
     anim.draw(0);
     std::cin.get(dummy);
 
+    /*
+    This for loop is the basis for the program, each cycle is paused and waits for a use input to continue. with each cycle, the vehicles
+    increment forward by 1 cycle. Vehicles are both spawned and move at the start of each cycle and their behavior is determined by the probability
+    that they turn right as 
+    */
     for (int time = 1; time <= maximum_simulated_time; time++)
     {
         // for trafficLight go, check count then change color or decrement count
@@ -203,14 +214,14 @@ int main(int argc, char *argv[])
         {
             if (east_west_go) 
             {
-                go = &northSouthLight;
+                go = &north_South_Light;
                 go->setGreen();
                 anim.setLightNorthSouth(go->getLightColor());
                 east_west_go = false;
             }
             else 
             {
-                go = &eastWestLight;
+                go = &east_West_Light;
                 go->setGreen();
                 anim.setLightEastWest(go->getLightColor());
                 east_west_go = true;
@@ -221,10 +232,10 @@ int main(int argc, char *argv[])
         northbound.moveVehicles();
         eastbound.moveVehicles();
         southbound.moveVehicles();
-        westbound.spawnNewVehicle(rand_double(rng), rand_double(rng));
-        northbound.spawnNewVehicle(rand_double(rng), rand_double(rng));
-        eastbound.spawnNewVehicle(rand_double(rng), rand_double(rng));
-        southbound.spawnNewVehicle(rand_double(rng), rand_double(rng));
+        westbound.spawnNewVehicle((float)random_number_generator.getRandomDouble(),(float)random_number_generator.getRandomDouble());
+        northbound.spawnNewVehicle((float)random_number_generator.getRandomDouble(), (float)random_number_generator.getRandomDouble());
+        eastbound.spawnNewVehicle((float)random_number_generator.getRandomDouble(), (float)random_number_generator.getRandomDouble());
+        southbound.spawnNewVehicle((float)random_number_generator.getRandomDouble(), (float)random_number_generator.getRandomDouble());
         westbound.changeRoadBound(northbound);
         northbound.changeRoadBound(eastbound);
         eastbound.changeRoadBound(southbound);
@@ -236,14 +247,5 @@ int main(int argc, char *argv[])
         anim.setVehiclesEastbound(eastbound.getVehicleBaseVector());
         anim.draw(time);
         std::cin.get(dummy);
-
-        // if (time % 2 == 0 || time % 3 == 0) 
-        // {
-        //     randnum = 1;
-        // }
-        // else
-        // {
-        //     randnum = 0.1;
-        // }
     }
 }
