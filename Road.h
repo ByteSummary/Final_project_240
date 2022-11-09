@@ -7,6 +7,11 @@
 #include <map>
 #include <string>
 
+/*
+This class defines behavior that will occur on the pathway of the vehicles. From moving the vehicles to making the car turn right, the road class
+implements all of these functionalities. 
+*/
+
 class Road {
 
     public:
@@ -19,15 +24,14 @@ class Road {
         static VehicleType highest_vehicle;
     
     private:
-        std::vector<VehicleBase*> road_Bound;
-        Direction road_Direction;
+        std::vector<VehicleBase*> road_bound;
+        Direction road_direction;
         float prob_new_vehicle;
-        VehicleBase* new_Vehicle;
-        VehicleBase* end_Vehicle;
-        TrafficLight& traffic_Light;
+        VehicleBase* new_vehicle;
+        VehicleBase* end_vehicle;
+        TrafficLight& traffic_light;
 
     public: 
-        // Road();
         Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight& stoplight);
         Road(const Road& other);
         Road& operator=(const Road& other);
@@ -36,10 +40,10 @@ class Road {
         ~Road();
 
         void moveVehicles();
-        void spawnNewVehicle(float randnumSpawn, float randnumRightTurn);
+        void spawnNewVehicle(float rand_num_spawn, float rand_num_right_turn);
         void changeRoadBound(Road& right_road_bound);
 
-        inline std::vector<VehicleBase*>& getVehicleBaseVector() {return this->road_Bound;}
+        inline std::vector<VehicleBase*>& getVehicleBaseVector() {return this->road_bound;}
 
         inline static void initRoadSections(int number_of_sections_before_interseciton) {sections_before_intersection = number_of_sections_before_interseciton;}
         static void settingVehicleProportions(float proportion_of_cars, float proportion_of_SUVs, float proportion_of_trucks);

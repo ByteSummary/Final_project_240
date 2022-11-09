@@ -5,32 +5,33 @@
 #include "VehicleBase.h"
 #include "TrafficLight.h"
 
+//Nulltype for LighColor object
 LightColor NULLCOLOR;
 
 // empty constructor
 TrafficLight::TrafficLight() {
     lightcolor = NULLCOLOR;
-    timeGreen = 0;
-    timeYellow = 0;
-    timeRed = 0;
-    timeChange = 0;
+    time_green = 0;
+    time_yellow = 0;
+    time_red = 0;
+    time_change = 0;
 }
 
 // common use constructor
 TrafficLight::TrafficLight(LightColor color, int green, int yellow) {
     lightcolor = color;
-    timeGreen = green;
-    timeYellow = yellow;
-    timeRed = green + yellow;
+    time_green = green;
+    time_yellow = yellow;
+    time_red = green + yellow;
 
     if (color == LightColor::red) {
-        timeChange = 0;
+        time_change = 0;
     }
     else if (color == LightColor::yellow) {
-        timeChange = yellow;
+        time_change = yellow;
     }
     else if (color == LightColor::green) {
-        timeChange = green + yellow;
+        time_change = green + yellow;
     }
 
 }
@@ -38,10 +39,10 @@ TrafficLight::TrafficLight(LightColor color, int green, int yellow) {
 // copy constructor
 TrafficLight::TrafficLight(const TrafficLight& other):
     lightcolor(other.lightcolor),
-    timeGreen(other.timeGreen),
-    timeYellow(other.timeYellow),
-    timeRed(other.timeRed),
-    timeChange(other.timeChange)
+    time_green(other.time_green),
+    time_yellow(other.time_yellow),
+    time_red(other.time_red),
+    time_change(other.time_change)
     {}
 
 // copy assignment operator
@@ -50,10 +51,10 @@ TrafficLight& TrafficLight::operator=(const TrafficLight& other) {
         return *this;
     }
     lightcolor = other.lightcolor;
-    timeGreen = other.timeGreen;
-    timeYellow = other.timeYellow;
-    timeRed = other.timeRed;
-    timeChange = other.timeChange;
+    time_green = other.time_green;
+    time_yellow = other.time_yellow;
+    time_red = other.time_red;
+    time_change = other.time_change;
 
     return *this;
 }
@@ -61,15 +62,15 @@ TrafficLight& TrafficLight::operator=(const TrafficLight& other) {
 // move constructor
 TrafficLight::TrafficLight(TrafficLight&& other)noexcept:
     lightcolor(other.lightcolor),
-    timeGreen(other.timeGreen),
-    timeYellow(other.timeYellow),
-    timeRed(other.timeRed),
-    timeChange(other.timeChange) {
+    time_green(other.time_green),
+    time_yellow(other.time_yellow),
+    time_red(other.time_red),
+    time_change(other.time_change) {
         other.lightcolor = NULLCOLOR;
-        other.timeYellow = 0;
-        other.timeRed = 0;
-        other.timeGreen = 0;
-        other.timeChange = 0;
+        other.time_yellow = 0;
+        other.time_red = 0;
+        other.time_green = 0;
+        other.time_change = 0;
     }
 
 // move assginment operator
@@ -78,40 +79,40 @@ TrafficLight& TrafficLight::operator=(TrafficLight&& other)noexcept {
         return *this;
     }
     lightcolor = other.lightcolor;
-    timeGreen = other.timeGreen;
-    timeYellow = other.timeYellow;
-    timeRed = other.timeRed;
-    timeChange = other.timeChange;
+    time_green = other.time_green;
+    time_yellow = other.time_yellow;
+    time_red = other.time_red;
+    time_change = other.time_change;
     other.lightcolor = NULLCOLOR;
-    other.timeYellow = 0;
-    other.timeRed = 0;
-    other.timeGreen = 0;
-    other.timeChange = 0;
+    other.time_yellow = 0;
+    other.time_red = 0;
+    other.time_green = 0;
+    other.time_change = 0;
 
     return *this;
 }
 
 // returns time change of traffic light
 int TrafficLight::getTimeChange(){
-    return timeChange;
+    return time_change;
 }
 
 // checks time change of traffic light and changes color or decrements time change
 // depending on the its value
 void TrafficLight::timeLightChange(){
-    if (timeChange == timeYellow)
+    if (time_change == time_yellow)
     {
         setLightColor(LightColor::yellow);
-        timeChange = timeChange - 1;
+        time_change = time_change - 1;
     }
-    else if (timeChange == 0)
+    else if (time_change == 0)
     {
         setLightColor(LightColor::red);
-        timeChange = timeGreen + timeYellow;
+        time_change = time_green + time_yellow;
     }
     else 
     {
-        timeChange = timeChange - 1;
+        time_change = time_change - 1;
     }
 }
 
@@ -129,7 +130,7 @@ void TrafficLight::setLightColor(LightColor newColor) {
 // time yellow and time green
 void TrafficLight::setGreen(){
     setLightColor(LightColor::green);
-    timeChange = timeGreen + timeYellow;
+    time_change = time_green + time_yellow;
 }
 
 #endif

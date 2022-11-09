@@ -8,8 +8,6 @@ float VehicleBase::carRightTurnProb = 0.0;
 float VehicleBase::suvRightTurnProb = 0.0;
 float VehicleBase::truckRightTurnProb = 0.0;
 
-VehicleType NULLTYPE;
-Direction NULLDIRECTION;
 
 // common use constructor
 VehicleBase::VehicleBase(VehicleType type, Direction direction, float randnum)

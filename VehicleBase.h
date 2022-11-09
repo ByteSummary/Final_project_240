@@ -13,6 +13,8 @@ class VehicleBase
       static float carRightTurnProb;
       static float suvRightTurnProb;
       static float truckRightTurnProb;
+      VehicleType NULLTYPE;
+      Direction NULLDIRECTION;
 
    private:
       int         vehicleID;

@@ -7,10 +7,10 @@ class TrafficLight {
 
     private:
         LightColor lightcolor;
-        int timeGreen;
-        int timeYellow;
-        int timeRed;
-        int timeChange;
+        int time_green;
+        int time_yellow;
+        int time_red;
+        int time_change;
 
     public:
         TrafficLight();
