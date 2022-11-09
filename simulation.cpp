@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
             eastbound.changeRoadBound(southbound);
             southbound.changeRoadBound(westbound);
 
-            // Sets vehicles for the animator
+            //Sets vehicles for the animator
             anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
             anim.setVehiclesWestbound(westbound.getVehicleBaseVector());
             anim.setVehiclesSouthbound(southbound.getVehicleBaseVector());

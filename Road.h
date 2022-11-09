@@ -32,7 +32,7 @@ class Road {
         TrafficLight& traffic_light;
 
     public: 
-        Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight& stoplight);
+        Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight& stop_light);
         Road(const Road& other);
         Road& operator=(const Road& other);
         Road(Road&& other)noexcept;

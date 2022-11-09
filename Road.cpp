@@ -231,10 +231,10 @@ void Road::moveVehicles(){
 void Road::spawnNewVehicle(float randnumSpawn, float randnumRightTurn){
     // call function to add vehicles in each road
     // checks if vehicle is already being added and if first section of road is open
-    if (new_vehicle == nullptr && road_bound[0] == nullptr)
+    if (new_vehicle == nullptr)
     {
         // checks if randnum is inside probability
-        if (randnumSpawn < prob_new_vehicle)
+        if (road_bound[0] == nullptr && randnumSpawn < prob_new_vehicle)
         {
             // determines type of vehicle to be made based on randnum and proportions
             VehicleType new_vehicle_type = highest_vehicle;
@@ -253,11 +253,14 @@ void Road::spawnNewVehicle(float randnumSpawn, float randnumRightTurn){
     }
     else
     {
-        road_bound[0] = new_vehicle;
-        new_vehicle->incrementVehicleLengthCount();
-        if (new_vehicle->getVehicleLengthCount() == new_vehicle->getVehicleLength())
+        if (road_bound[0] == nullptr)
         {
-            new_vehicle = nullptr;
+            road_bound[0] = new_vehicle;
+            new_vehicle->incrementVehicleLengthCount();
+            if (new_vehicle->getVehicleLengthCount() == new_vehicle->getVehicleLength())
+            {
+                new_vehicle = nullptr;
+            }
         }
     }
 }
@@ -268,8 +271,9 @@ void Road::changeRoadBound(Road& right_road_bound){
     VehicleBase* vehicle_in_intersection = road_bound[sections_before_intersection];
     if (vehicle_in_intersection != nullptr)
     {
+        bool right_turn = vehicle_in_intersection->getWillTurnRight();
         bool is_crossing_intersection = vehicle_in_intersection->getIsCrossingIntersection();
-        if (is_crossing_intersection) 
+        if (right_turn == true && is_crossing_intersection == true) 
         {
             std::vector<VehicleBase*>& right_road_bound_vector = right_road_bound.getVehicleBaseVector();
             right_road_bound_vector[sections_before_intersection + 1] = vehicle_in_intersection;
