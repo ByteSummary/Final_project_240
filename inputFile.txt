@@ -1,4 +1,4 @@
-maximum_simulated_time:                 1000
+maximum_simulated_time:                   100
 number_of_sections_before_intersection:   10
 green_north_south:                        12
 yellow_north_south:                        3

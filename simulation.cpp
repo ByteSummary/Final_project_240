@@ -20,9 +20,11 @@ int main(int argc, char *argv[])
     float value = 0;
 
     if (argc == 3) {
-        
+
+        // gets input file from command line arguments
         std::ifstream infile(argv[1]);
 
+        // checks if file can be opened
         if (!infile)
         {
             std::cerr << "Error: could not open file: " << argv[1] << std::endl;
@@ -30,7 +32,7 @@ int main(int argc, char *argv[])
         }
 
 
-        // variables from input file
+        // getting variables from input file and placing it in map
         while (infile >> category >> value)
         {
             if (category == "maximum_simulated_time:")
@@ -129,9 +131,11 @@ int main(int argc, char *argv[])
         float proportion_left_turn_trucks = compositionFile.find("proportion_left_turn_trucks")->second;
         float proportion_of_trucks = 1 - (proportion_of_cars + proportion_of_SUVs);
 
+        // produces random number generator from seed provided by the user
         int initial_seed = atoi(argv[2]);
         Random random_number_generator = Random(initial_seed);
 
+        // character used to tell when to increment time
         char dummy;
 
         //define the number of road sections
@@ -192,6 +196,7 @@ int main(int argc, char *argv[])
                 anim.setLightNorthSouth(go->getLightColor());
             }
 
+            // changes lights that are on go/green if time is up
             if (go->getLightColor() == LightColor::red)
             {
                 if (east_west_go) 
@@ -210,7 +215,7 @@ int main(int argc, char *argv[])
                 }
             }
             
-            // Moves the vehicles on each of the roads
+            // Moves the vehicles on each of the roads forward by 1
             westbound.moveVehicles();
             northbound.moveVehicles();
             eastbound.moveVehicles();
@@ -222,7 +227,7 @@ int main(int argc, char *argv[])
             eastbound.spawnNewVehicle((float)random_number_generator.getRandomDouble(), (float)random_number_generator.getRandomDouble());
             southbound.spawnNewVehicle((float)random_number_generator.getRandomDouble(), (float)random_number_generator.getRandomDouble());
 
-            //Will change the road of the vehicle 
+            //Will change the road of the vehicle if turning right
             westbound.changeRoadBound(northbound);
             northbound.changeRoadBound(eastbound);
             eastbound.changeRoadBound(southbound);

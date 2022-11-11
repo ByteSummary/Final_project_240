@@ -86,18 +86,37 @@ Road& Road::operator=(Road&& other)noexcept{
 
 //Destructor
 Road::~Road(){
+    // gets vehicle at start of road if any
     VehicleBase* vehicle_pointer = road_bound[0];
 
+    // loops through all sections of a road
     for (int pointer_counter = 1; pointer_counter < (sections_before_intersection * 2 + 2); pointer_counter++)
     {
+        // gets vehicle at section of road at pointer counter
         VehicleBase* next_vehicle_pointer = road_bound[pointer_counter];
+
+        // checks if pointer counter is at end of the road
         if (pointer_counter == (sections_before_intersection * 2 + 2) - 1)
         {
-            delete next_vehicle_pointer;
+            // checks if pointer counter is pointing to null pointer
+            if (next_vehicle_pointer != nullptr)
+            {
+                // deletes vehicle
+                delete next_vehicle_pointer;
+            }
             break;
-        } else if (vehicle_pointer != next_vehicle_pointer)
+        } 
+        // checkes if vehicle pointer and next vehicle pointer are pointing to the same thing
+        else if (vehicle_pointer != next_vehicle_pointer)
         {
-            delete vehicle_pointer;
+            // checks if vehicle counter is pointing to null pointer
+            if (vehicle_pointer != nullptr)
+            {
+                // deletes vehicle
+                delete vehicle_pointer;
+            }
+
+            // vehicle pointer points to what next vehicle pointer is pointing to 
             vehicle_pointer = next_vehicle_pointer;
         }
     }
@@ -246,6 +265,7 @@ void Road::spawnNewVehicle(float randnumSpawn, float randnumRightTurn){
             {
                 new_vehicle_type = middle_vehicle;
             }
+            // creates new vehicle and places it at start of road
             new_vehicle = new VehicleBase(new_vehicle_type, road_direction, randnumRightTurn);
             road_bound[0] = new_vehicle;
             new_vehicle->incrementVehicleLengthCount();
@@ -253,10 +273,13 @@ void Road::spawnNewVehicle(float randnumSpawn, float randnumRightTurn){
     }
     else
     {
+        // checks if new part of vehicle can be placed
         if (road_bound[0] == nullptr)
         {
+            // add new part of vehicle at start of road
             road_bound[0] = new_vehicle;
             new_vehicle->incrementVehicleLengthCount();
+            // stops adding part of vehicle when length is appropriate
             if (new_vehicle->getVehicleLengthCount() == new_vehicle->getVehicleLength())
             {
                 new_vehicle = nullptr;
@@ -298,7 +321,6 @@ void Road::settingVehicleProportions(float proportion_of_cars, float proportion_
                 middle_proportion = proportion_of_trucks;
                 middle_vehicle = VehicleType::truck;
                 highest_vehicle = VehicleType::suv;
-                std::cout << "cars < trucks < suvs" << std::endl;
             }
             else
             {
@@ -306,7 +328,6 @@ void Road::settingVehicleProportions(float proportion_of_cars, float proportion_
                 middle_proportion = proportion_of_SUVs;
                 middle_vehicle = VehicleType::suv;
                 highest_vehicle = VehicleType::truck;
-                std::cout << "cars < suvs < trucks" << std::endl;
             }
         }
         else
@@ -317,7 +338,6 @@ void Road::settingVehicleProportions(float proportion_of_cars, float proportion_
             middle_proportion = proportion_of_cars;
             middle_vehicle = VehicleType::car;
             highest_vehicle = VehicleType::suv;
-            std::cout << "trucks < car < suvs" << std::endl;
         }
     }
     else
@@ -334,7 +354,6 @@ void Road::settingVehicleProportions(float proportion_of_cars, float proportion_
                 middle_proportion = proportion_of_trucks;
                 middle_vehicle = VehicleType::truck;
                 highest_vehicle = VehicleType::car;
-                std::cout << "suvs < trucks < cars" << std::endl;
             }
             else
             {
@@ -342,7 +361,6 @@ void Road::settingVehicleProportions(float proportion_of_cars, float proportion_
                 middle_proportion = proportion_of_cars;
                 middle_vehicle = VehicleType::car;
                 highest_vehicle = VehicleType::truck;
-                std::cout << "suvs < cars < trucks" << std::endl;
             }
         }
         else
@@ -353,7 +371,6 @@ void Road::settingVehicleProportions(float proportion_of_cars, float proportion_
             middle_proportion = proportion_of_SUVs;
             middle_vehicle = VehicleType::suv;
             highest_vehicle = VehicleType::car;
-            std::cout << "trucks < suvs < cars" << std::endl;
         }
     }
 }
