@@ -287,40 +287,6 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
                     road_bound[vehicle_pointer_counter] = nullptr;
                 }
             }
-            // at end of the road
-            else if (vehicle_pointer_counter == (sections_before_intersection * 2 + 2) - 1)
-            {
-                // checks if there is a vehicle currently leaving road
-                if(end_vehicle == nullptr)
-                {
-                    // sets end vehicle to vehicle at end of road
-                    end_vehicle = road_bound[vehicle_pointer_counter];
-
-                    // makes vehicle disappear from road
-                    road_bound[vehicle_pointer_counter] = nullptr;
-
-                    // decrement vehicle length count to know how much vehicle is still on road
-                    end_vehicle->decrementVehicleLengthCount();
-                } 
-                else
-                {
-                    // makes vehicle disappear from road
-                    road_bound[vehicle_pointer_counter] = nullptr;
-
-                    // decrement vehicle length count to know how much vehicle is still on road
-                    end_vehicle->decrementVehicleLengthCount();
-
-                    // checks if all of vehicle is off the road
-                    if (end_vehicle->getVehicleLengthCount() == 0)
-                    {
-                        // deletes the vehicle
-                        delete end_vehicle;
-
-                        // sets end vehicle to nullptr
-                        end_vehicle = nullptr;
-                    }
-                }
-            }
             else if (vehicle_pointer_counter == sections_before_intersection)
             {
                 // getting vehicle and its details
@@ -369,6 +335,40 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
                         }
                     }
                 }  
+            }
+            // at end of the road
+            else if (vehicle_pointer_counter == (sections_before_intersection * 2 + 2) - 1)
+            {
+                // checks if there is a vehicle currently leaving road
+                if(end_vehicle == nullptr)
+                {
+                    // sets end vehicle to vehicle at end of road
+                    end_vehicle = road_bound[vehicle_pointer_counter];
+
+                    // makes vehicle disappear from road
+                    road_bound[vehicle_pointer_counter] = nullptr;
+
+                    // decrement vehicle length count to know how much vehicle is still on road
+                    end_vehicle->decrementVehicleLengthCount();
+                } 
+                else
+                {
+                    // makes vehicle disappear from road
+                    road_bound[vehicle_pointer_counter] = nullptr;
+
+                    // decrement vehicle length count to know how much vehicle is still on road
+                    end_vehicle->decrementVehicleLengthCount();
+
+                    // checks if all of vehicle is off the road
+                    if (end_vehicle->getVehicleLengthCount() == 0)
+                    {
+                        // deletes the vehicle
+                        delete end_vehicle;
+
+                        // sets end vehicle to nullptr
+                        end_vehicle = nullptr;
+                    }
+                }
             }
             // not at end of road
             else
