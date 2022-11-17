@@ -42,7 +42,6 @@ class VehicleBase
 
       void incrementVehicleLengthCount();
       void decrementVehicleLengthCount();
-      void resetVehicleLengthCount();
       void setIsCrossingIntersection(bool value);
       void setHasSwitchedBoundsLeft(bool value);
 

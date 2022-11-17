@@ -23,6 +23,7 @@ class Road {
         static float middle_proportion;
         static VehicleType highest_vehicle;
         static bool left_turn_happening;
+        static int left_turn_count;
     
     private:
         std::vector<VehicleBase*> road_bound;

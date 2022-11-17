@@ -20,6 +20,7 @@ float Road::middle_proportion = 0.0;
 VehicleType Road::highest_vehicle = VehicleType::car;
 
 bool Road::left_turn_happening = false;
+int Road::left_turn_count = 0;
 
 Road::Road(Direction direction, float spawn_new_vehicle_rate, TrafficLight& stop_light)
     : road_direction(direction),
@@ -337,17 +338,17 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
                     // checking if vehicle is making left turn
                     if (left_turn == true)
                     {
-                        // decrease vehicle length count 
-                        vehicle_at_intersection->decrementVehicleLengthCount();
+                        // increase left turn count by 1
+                        left_turn_count++;
 
-                        // checking if count is zero
-                        if (vehicle_at_intersection->getVehicleLengthCount() == 0)
+                        // checking if left turn count is equal to length of vehicle
+                        if (left_turn_count == vehicle_at_intersection->getVehicleLength())
                         {
                             // left turn is finished
                             left_turn_happening = false;
 
-                            // reseting vehicle length count value
-                            vehicle_at_intersection->resetVehicleLengthCount();
+                            // reset left turn count to 0
+                            left_turn_count = 0;
                         }
                     }
                 }

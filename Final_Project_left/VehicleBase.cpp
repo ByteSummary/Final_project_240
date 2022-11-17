@@ -124,11 +124,6 @@ void VehicleBase::decrementVehicleLengthCount(){
   vehicleLengthCount = vehicleLengthCount - 1;
 }
 
-// resets vehicle length count to vehicle length
-void VehicleBase::resetVehicleLengthCount(){
-  vehicleLengthCount = vehicleLength;
-}
-
 // determines if vehicle will turn right, left or straight
 void VehicleBase::setTurn(float randnum){
   float rightTurnProb = 0.0;
