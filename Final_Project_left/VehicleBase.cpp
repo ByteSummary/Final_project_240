@@ -38,7 +38,11 @@ VehicleBase::VehicleBase(const VehicleBase& other):
       vehicleType(other.vehicleType),
       vehicleDirection(other.vehicleDirection),
       vehicleLength(other.vehicleLength),
-      vehicleLengthCount(other.vehicleLengthCount)
+      vehicleLengthCount(other.vehicleLengthCount),
+      willTurnRight(other.willTurnRight),
+      willTurnLeft(other.willTurnLeft),
+      hasSwitchedBoundsLeft(other.hasSwitchedBoundsLeft),
+      isCrossingIntersection(other.isCrossingIntersection)
 {}
 
 // copy assignment operator
@@ -51,6 +55,10 @@ VehicleBase& VehicleBase::operator=(const VehicleBase& other) {
   vehicleDirection = other.vehicleDirection;
   vehicleLength = other.vehicleLength;
   vehicleLengthCount = other.vehicleLengthCount;
+  willTurnRight = other.willTurnRight;
+  willTurnLeft = other.willTurnLeft;
+  hasSwitchedBoundsLeft = other.hasSwitchedBoundsLeft;
+  isCrossingIntersection = other.isCrossingIntersection;
 
   return *this;
 }
@@ -61,12 +69,20 @@ VehicleBase::VehicleBase(VehicleBase&& other)noexcept:
   vehicleType(other.vehicleType),
   vehicleDirection(other.vehicleDirection),
   vehicleLength(other.vehicleLength),
-  vehicleLengthCount(other.vehicleLengthCount) {
+  vehicleLengthCount(other.vehicleLengthCount),
+  willTurnRight(other.willTurnRight),
+  willTurnLeft(other.willTurnLeft),
+  hasSwitchedBoundsLeft(other.hasSwitchedBoundsLeft),
+  isCrossingIntersection(other.isCrossingIntersection) {
     other.vehicleID = 0;
     other.vehicleType = NULLTYPE;
     other.vehicleDirection = NULLDIRECTION;
     other.vehicleLength = 0;
     other.vehicleLengthCount = 0;
+    other.willTurnRight = false;
+    other.willTurnLeft = false;
+    other.hasSwitchedBoundsLeft = false;
+    other.isCrossingIntersection = false;
   }
 
 // move assignment operator constructor
@@ -79,11 +95,19 @@ VehicleBase& VehicleBase::operator=(VehicleBase&& other)noexcept {
   vehicleDirection = other.vehicleDirection;
   vehicleLength = other.vehicleLength;
   vehicleLengthCount = other.vehicleLengthCount;
+  willTurnRight = other.willTurnRight;
+  willTurnLeft = other.willTurnLeft;
+  hasSwitchedBoundsLeft = other.hasSwitchedBoundsLeft;
+  isCrossingIntersection = other.isCrossingIntersection;
   other.vehicleID = 0;
   other.vehicleType = NULLTYPE;
   other.vehicleDirection = NULLDIRECTION;
   other.vehicleLength = 0;
   other.vehicleLengthCount = 0;
+  other.willTurnRight = false;
+  other.willTurnLeft = false;
+  other.hasSwitchedBoundsLeft = false;
+  other.isCrossingIntersection = false;
   return *this;
 }
 
@@ -100,11 +124,12 @@ void VehicleBase::decrementVehicleLengthCount(){
   vehicleLengthCount = vehicleLengthCount - 1;
 }
 
+// resets vehicle length count to vehicle length
 void VehicleBase::resetVehicleLengthCount(){
   vehicleLengthCount = vehicleLength;
 }
 
-// determines if vehicle will turn right or not
+// determines if vehicle will turn right, left or straight
 void VehicleBase::setTurn(float randnum){
   float rightTurnProb = 0.0;
   float leftTurnProb = 0.0;
@@ -260,6 +285,7 @@ void VehicleBase::setIsCrossingIntersection(bool value){
   isCrossingIntersection = value;
 }
 
+// sets has switched bounds left to value
 void VehicleBase::setHasSwitchedBoundsLeft(bool value){
   hasSwitchedBoundsLeft = value;
 }

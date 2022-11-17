@@ -162,8 +162,7 @@ int main(int argc, char *argv[])
         anim.setLightEastWest(east_West_Light.getLightColor());
         anim.setLightNorthSouth(north_South_Light.getLightColor());
 
-        // int count_north_south = 0;
-        // int count_east_west = 0;
+        // start off with east/west traffic light on go
         bool east_west_go = true;
 
         //construct roads from Road class
@@ -172,10 +171,11 @@ int main(int argc, char *argv[])
         Road southbound(Direction::south, prob_new_vehicle_southbound, north_South_Light);
         Road eastbound(Direction::east, prob_new_vehicle_eastbound, east_West_Light);
 
+        // queues for east/west and north/south roads for vehicles turning left
         std::queue<VehicleBase*> west_east_queue;
         std::queue<VehicleBase*> north_south_queue;
 
-        //Animate vehicles in each direction
+        // Animate vehicles in each direction
         anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
         anim.setVehiclesWestbound(westbound.getVehicleBaseVector());
         anim.setVehiclesSouthbound(southbound.getVehicleBaseVector());
@@ -220,12 +220,9 @@ int main(int argc, char *argv[])
                     east_west_go = true;
                 }
             }
-
-            // // Start vehicles do to a left turn
-            // westbound.startLeftTurn(eastbound, westEast);
-            // northbound.startLeftTurn(southbound, northSouth);
             
             // Moves the vehicles on each of the roads forward by 1
+            // Loops through each section of road from end to 0
             for (int vehicle_pointer_counter = (number_of_sections_before_intersection * 2 + 2) - 1; vehicle_pointer_counter >= 0; vehicle_pointer_counter--)
             {
                 westbound.moveVehicles(vehicle_pointer_counter, southbound, eastbound, &west_east_queue);
@@ -234,7 +231,7 @@ int main(int argc, char *argv[])
                 southbound.moveVehicles(vehicle_pointer_counter, eastbound, northbound, &north_south_queue);
             }
 
-            //Spawns the vehicles on each of the roads and uses the random generator to set probabilities to a pseudo-random number
+            // Spawns the vehicles on each of the roads and uses the random generator to set probabilities to a pseudo-random number
             westbound.spawnNewVehicle((float)random_number_generator.getRandomDouble(),(float)random_number_generator.getRandomDouble());
             northbound.spawnNewVehicle((float)random_number_generator.getRandomDouble(), (float)random_number_generator.getRandomDouble());
             eastbound.spawnNewVehicle((float)random_number_generator.getRandomDouble(), (float)random_number_generator.getRandomDouble());
@@ -246,17 +243,20 @@ int main(int argc, char *argv[])
             eastbound.changeRoadBoundRight(southbound);
             southbound.changeRoadBoundRight(westbound);
 
+            // Changes values of has switched bounds left to false if there is a vehicle making a left turn
+            // and if part of it is at the end of the intersection
             westbound.setSwitchedBoundsLeftFalse();
             northbound.setSwitchedBoundsLeftFalse();
             eastbound.setSwitchedBoundsLeftFalse();
             southbound.setSwitchedBoundsLeftFalse();
 
+            // Adds vehicles to queue if turning left
             westbound.addToLeftQueue(&west_east_queue);
             northbound.addToLeftQueue(&north_south_queue);
             eastbound.addToLeftQueue(&west_east_queue);
             southbound.addToLeftQueue(&north_south_queue);
 
-            //Sets vehicles for the animator
+            // Sets vehicles for the animator
             anim.setVehiclesNorthbound(northbound.getVehicleBaseVector());
             anim.setVehiclesWestbound(westbound.getVehicleBaseVector());
             anim.setVehiclesSouthbound(southbound.getVehicleBaseVector());

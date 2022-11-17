@@ -5,7 +5,6 @@
 #include "Road.h"
 #include "VehicleBase.h"
 #include <vector>
-#include <iostream>
 #include <queue>
 
 //Create nulltypes for constructors
@@ -68,6 +67,7 @@ Road::Road(Road&& other)noexcept:
         other.new_vehicle = nullptr;
         other.end_vehicle = nullptr;
     }
+
 //Move assignment operator
 Road& Road::operator=(Road&& other)noexcept{
     if (this == &other) {
@@ -137,29 +137,42 @@ void Road::startLeftTurn(Road& same_road_go, std::queue<VehicleBase*>* vehicle_l
         go = false;
     }
 
-    if (!vehicle_left_queue->empty())
+    // checks if queue is empty and if there is a left turn already happening
+    if (!vehicle_left_queue->empty() && left_turn_happening == false)
     {
+        // gets vehicle at front of the queue and its direction
         VehicleBase* vehicle_planned_left_turn = vehicle_left_queue->front();
         Direction vehicle_planned_left_turn_direction = vehicle_planned_left_turn->getVehicleOriginalDirection();
 
+        // checks if direction of vehicle at front of queue is the same as direction of road
         if (vehicle_planned_left_turn_direction == road_direction)
         {
+            // getting length of vehicle
             int length_of_vehicle = vehicle_planned_left_turn->getVehicleLength();
-
-            bool no_vehicles_in_other_road = true;
-            std::vector<VehicleBase*>& other_road_bound_vector = same_road_go.getVehicleBaseVector();
 
             // takes length + 2 to leave intersection when turning left
             int length_of_vehicle_left = length_of_vehicle + 2;
 
-            if (vehicle_left_queue->size() > 1 && left_turn_happening == false)
+            // initializing value to determine if vehicle can make left turn
+            bool no_vehicles_in_other_road = true;
+
+            // getting vector of the other road that goes on green (west/east, north/south)
+            std::vector<VehicleBase*>& other_road_bound_vector = same_road_go.getVehicleBaseVector();
+
+            // checks if vehicle size is greater than 1
+            // if queue is greater than 1 then it means that both vehicles on the two roads want to turn left
+            if (vehicle_left_queue->size() > 1)
             {
                 // can turn left
                 if (length_of_vehicle_left <= time_remaining && go)
                 {
                     // is starting to move
                     road_bound[sections_before_intersection - 1]->setIsCrossingIntersection(true);
+
+                    // popping queue to indicate that vehicle is starting to turn and is no longer waiting
                     vehicle_left_queue->pop();
+
+                    // declaring that left turn is occurring
                     left_turn_happening = true;
 
                     // advance vehicle one square forward
@@ -169,6 +182,7 @@ void Road::startLeftTurn(Road& same_road_go, std::queue<VehicleBase*>* vehicle_l
             }
             else
             {
+                // checking if there are enough sections free on the other side of the road
                 for (int vehicle_pointer_counter = sections_before_intersection; vehicle_pointer_counter >= (sections_before_intersection - length_of_vehicle_left); vehicle_pointer_counter--)
                 {
                     if (other_road_bound_vector[vehicle_pointer_counter] != nullptr)
@@ -178,14 +192,19 @@ void Road::startLeftTurn(Road& same_road_go, std::queue<VehicleBase*>* vehicle_l
                     }
                 }
 
-                if (no_vehicles_in_other_road == true && left_turn_happening == false)
+                // checking if it is safe for vehicle to make turn
+                if (no_vehicles_in_other_road == true)
                 {
                     // can turn left
                     if (length_of_vehicle_left <= time_remaining && go)
                     {
                         // is starting to move
                         road_bound[sections_before_intersection - 1]->setIsCrossingIntersection(true);
+                        
+                        // popping queue to indicate that vehicle is starting to turn and is no longer waiting
                         vehicle_left_queue->pop();
+
+                        // declaring that left turn is occurring
                         left_turn_happening = true;
 
                         // advance vehicle one square forward
@@ -204,7 +223,7 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
     // checking if pointing to nullptr
     if (road_bound[vehicle_pointer_counter] != nullptr)
     {
-        // at intersection
+        // at point before intersection
         if (vehicle_pointer_counter == sections_before_intersection - 1)
         {
             // getting vehicle and its details
@@ -242,24 +261,11 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
                     road_bound[vehicle_pointer_counter] = nullptr;
                 }
             }
-            // turn right and has started
-            else if (right_turn == true && left_turn == false && is_crossing_intersection == true)
-            {
-                // advance vehicle one square forward
-                road_bound[vehicle_pointer_counter + 1] = road_bound[vehicle_pointer_counter];
-                road_bound[vehicle_pointer_counter] = nullptr;
-            }
             // turn left and has not started
             else if (right_turn == false && left_turn == true && is_crossing_intersection == false)
             {
+                // start left turn if possible
                 startLeftTurn(same_road_go, vehicle_left_queue);
-            }
-            // turn left and has started
-            else if (right_turn == false && left_turn == true && is_crossing_intersection == true)
-            {
-                // advance vehicle one square forward
-                road_bound[vehicle_pointer_counter + 1] = road_bound[vehicle_pointer_counter];
-                road_bound[vehicle_pointer_counter] = nullptr;
             }
             //go straight and has not started
             else if (right_turn == false && left_turn == false && is_crossing_intersection == false)
@@ -278,6 +284,7 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
                     road_bound[vehicle_pointer_counter] = nullptr;
                 }
             }
+            // has started turning right, left or straight
             else
             {
                 // advance vehicle one square forward
@@ -285,12 +292,14 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
                 road_bound[vehicle_pointer_counter] = nullptr;
             }
         }
+        // at start of intersection
         else if (vehicle_pointer_counter == sections_before_intersection)
         {
             // getting vehicle and its details
             VehicleBase* vehicle_at_intersection = road_bound[vehicle_pointer_counter];
             bool left_turn = vehicle_at_intersection->getWillTurnLeft();
 
+            // checking if vehicle is making a left turn
             if (left_turn == false)
             {
                 // checks if space ahead is empty
@@ -303,9 +312,11 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
             }
             else
             {
+                // will change road bounds and change section vehicle is in
                 changeRoadBoundLeft(left_road_bound);
             }
         }
+        // at end of intersection
         else if (vehicle_pointer_counter == sections_before_intersection + 1)
         {
             // getting vehicle and its details
@@ -313,6 +324,7 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
             bool left_turn = vehicle_at_intersection->getWillTurnLeft();
             bool left_switched_bounds = vehicle_at_intersection->getHasSwitchedBoundsLeft();
 
+            // checking if vehicle is making left turn and if it has switched bounds if it is
             if (left_turn == false || (left_turn == true && left_switched_bounds == false))
             {
                 // checks if space ahead is empty
@@ -322,12 +334,19 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
                     road_bound[vehicle_pointer_counter + 1] = vehicle_at_intersection;
                     road_bound[vehicle_pointer_counter] = nullptr;
 
+                    // checking if vehicle is making left turn
                     if (left_turn == true)
                     {
+                        // decrease vehicle length count 
                         vehicle_at_intersection->decrementVehicleLengthCount();
+
+                        // checking if count is zero
                         if (vehicle_at_intersection->getVehicleLengthCount() == 0)
                         {
+                            // left turn is finished
                             left_turn_happening = false;
+
+                            // reseting vehicle length count value
                             vehicle_at_intersection->resetVehicleLengthCount();
                         }
                     }
@@ -368,7 +387,7 @@ void Road::moveVehicles(int vehicle_pointer_counter, Road& left_road_bound, Road
                 }
             }
         }
-        // not at end of road
+        // not at section before intersection, at intersection or end of the road
         else
         {
             // checks if space ahead is empty
@@ -414,6 +433,7 @@ void Road::spawnNewVehicle(float randnumSpawn, float randnumRightTurn){
             // add new part of vehicle at start of road
             road_bound[0] = new_vehicle;
             new_vehicle->incrementVehicleLengthCount();
+
             // stops adding part of vehicle when length is appropriate
             if (new_vehicle->getVehicleLengthCount() == new_vehicle->getVehicleLength())
             {
@@ -431,13 +451,19 @@ void Road::changeRoadBoundRight(Road& right_road_bound){
     // checks if there is a vehicle at start of intersection
     if (vehicle_in_intersection != nullptr)
     {
+        // gets details of vehicle
         bool right_turn = vehicle_in_intersection->getWillTurnRight();
         bool left_turn = vehicle_in_intersection->getWillTurnLeft();
         bool is_crossing_intersection = vehicle_in_intersection->getIsCrossingIntersection();
+
+        // checks if vehicle is making right turn and has started
         if (right_turn == true && left_turn == false && is_crossing_intersection == true) 
         {
+            // add vehicle to other road vector it is turning to
             std::vector<VehicleBase*>& right_road_bound_vector = right_road_bound.getVehicleBaseVector();
             right_road_bound_vector[sections_before_intersection + 1] = vehicle_in_intersection;
+
+            // remove from current road vector
             road_bound[sections_before_intersection] = nullptr;
         }
     }
@@ -447,55 +473,84 @@ void Road::changeRoadBoundRight(Road& right_road_bound){
 void Road::changeRoadBoundLeft(Road& left_road_bound){
     // changing road of vehicle
     VehicleBase* vehicle_in_intersection = road_bound[sections_before_intersection];
+
+    // checks if there is a vehicle at start of intersection
     if (vehicle_in_intersection != nullptr)
     {
+        // gets details of vehicle
         bool right_turn = vehicle_in_intersection->getWillTurnRight();
         bool left_turn = vehicle_in_intersection->getWillTurnLeft();
         bool is_crossing_intersection = vehicle_in_intersection->getIsCrossingIntersection();
+
+        // checks if vehicle is making left turn and has started
         if (right_turn == false && left_turn == true && is_crossing_intersection == true) 
         {
+            // change value of has switched bounds
             vehicle_in_intersection->setHasSwitchedBoundsLeft(true);
+
+            // add vehicle to other road vector it is turning to
             std::vector<VehicleBase*>& left_road_bound_vector = left_road_bound.getVehicleBaseVector();
             left_road_bound_vector[sections_before_intersection + 1] = vehicle_in_intersection;
+
+            // remove from current vector
             road_bound[sections_before_intersection] = nullptr;
         }
     }
 }
 
+// This function will add a vehicle to the queue that are for left turning vehicles
 void Road::addToLeftQueue(std::queue<VehicleBase*>* vehicle_left_queue){
     // add vehicle to queue if turning left
     VehicleBase* vehicle_in_intersection = road_bound[sections_before_intersection - 1];
+
+    // checks if there is a vehicle at section right before start of intersection
     if (vehicle_in_intersection != nullptr)
     {
+        // gets details of vehicle
         bool right_turn = vehicle_in_intersection->getWillTurnRight();
         bool left_turn = vehicle_in_intersection->getWillTurnLeft();
         bool is_crossing_intersection = vehicle_in_intersection->getIsCrossingIntersection();
+
+        // checking if vehicle is making left turn and has not started turning
         if (right_turn == false && left_turn == true && is_crossing_intersection == false) 
         {
+            // checking if queue is empty
             if (!vehicle_left_queue->empty())
             {
+                // checking front and back values of queue to see if vehicle is already in queue
+                // queue would only hold two vehicles maximum to represent on vehicle on each road (west/east, north/south)
                 if (vehicle_in_intersection != vehicle_left_queue->front() && vehicle_in_intersection != vehicle_left_queue->back())
                 {
+                    // add vehicle to queue
                     vehicle_left_queue->push(vehicle_in_intersection);
                 }
             }
             else
             {
+                // add vehicle to queue
                 vehicle_left_queue->push(vehicle_in_intersection);
             }
         }
     }
 }
 
+// This function changes the has switched bounds left to false
 void Road::setSwitchedBoundsLeftFalse(){
+    // change value of has switched bounds left if there is a vehicle turning left
     VehicleBase* vehicle_in_intersection = road_bound[sections_before_intersection + 1];
+
+    // checks if there is a vehicle at end of intersection
     if (vehicle_in_intersection != nullptr)
     {
+        //gets details of vehicle
         bool right_turn = vehicle_in_intersection->getWillTurnRight();
         bool left_turn = vehicle_in_intersection->getWillTurnLeft();
         bool is_crossing_intersection = vehicle_in_intersection->getIsCrossingIntersection();
+
+        // checks if vehicle is turning left and has started
         if (right_turn == false && left_turn == true && is_crossing_intersection == true) 
         {
+            // changes has switched bounds left to false
             vehicle_in_intersection->setHasSwitchedBoundsLeft(false);
         }
     }
