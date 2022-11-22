@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
             }
             else if (category == "prob_new_vehicle_southbound:")
             {
-                compositionFile["prob_new_vehicle_southbound:"] = value;
+                compositionFile["prob_new_vehicle_southbound"] = value;
             }
             else if (category == "prob_new_vehicle_eastbound:")
             {
@@ -209,6 +209,7 @@ int main(int argc, char *argv[])
                 {
                     go = &north_South_Light;
                     go->setGreen();
+                    go->timeLightChange();
                     anim.setLightNorthSouth(go->getLightColor());
                     east_west_go = false;
                 }
@@ -216,6 +217,7 @@ int main(int argc, char *argv[])
                 {
                     go = &east_West_Light;
                     go->setGreen();
+                    go->timeLightChange();
                     anim.setLightEastWest(go->getLightColor());
                     east_west_go = true;
                 }

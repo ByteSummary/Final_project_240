@@ -5,7 +5,7 @@ yellow_north_south:                        3
 green_east_west:                          10
 yellow_east_west:                          3
 prob_new_vehicle_northbound:               0.25
-prob_new_vehicle_southbound:               0.1
+prob_new_vehicle_southbound:               0.25
 prob_new_vehicle_eastbound:                0.15
 prob_new_vehicle_westbound:                0.15
 proportion_of_cars:                        0.6
